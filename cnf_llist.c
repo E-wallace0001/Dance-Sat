@@ -103,10 +103,11 @@ void read_cnf_list(char* argv,formula_atribute* problem){
 	
 	total_lit						= count_variables(argv)+1;
 	printf(" total_lit %lu \n", total_lit);
-	problem->assigned				= calloc(total_lit, sizeof(bool));
-	problem->assignment			= calloc(total_lit, sizeof(bool));
-	problem->propagated			= calloc(total_lit, sizeof(bool));
-	variable_position				= MakeSetArray(total_lit); 
+	
+	problem->assigned				= calloc(nr_variables, sizeof(bool));
+	problem->assignment			= calloc(nr_variables, sizeof(bool));
+	problem->propagated			= calloc(nr_variables, sizeof(bool));
+	variable_position				= MakeSetArray(nr_variables); 
 	problem->variable_position	= variable_position;
 	assert(variable_position  != NULL);
 	

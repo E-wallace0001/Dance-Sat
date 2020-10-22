@@ -10,6 +10,9 @@ typedef struct formula_atribute{
 	bool* assigned;
 	bool* assignment;
 	bool* propagated;
+	
+	bool* known;
+	
 	set_s* removed_set;
 	set_s* guessed_literals;
 	set_s* removed_list;

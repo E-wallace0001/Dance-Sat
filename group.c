@@ -242,6 +242,14 @@ void DelSet(set_s** set){
 	free( *set );
 }
 
+void ResetSet(set_s** set){
+
+	while((*set)->end!=NULL){
+		free((*set)->end->data);
+		GroupReduceSet( (*set)->end , (set) );
+	}
+}
+
 
 // group y
 // set 	x

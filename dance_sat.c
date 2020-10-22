@@ -24,29 +24,21 @@ void halt(){
 	}
 }
 
-
-// this finds where a previous literal was remvoed
-void Find_Bijection(group_s* variable_container,formula_atribute* problem, group_s* group1, lut* conflict){
-
-	
-	set_s* graph;
-	graph = MakeSet();
+// this finds initial implication before choice
+group_s* Find_Partial_Bijection(group_s* end, group_s* variable_container,formula_atribute* problem, group_s* group1, lut* conflict){
 
 	list_s* literal;
 	GS_mem* mem;
-	
 	list_s* node ;
-	
-	printf(" first %p second %p \n", conflict->first , conflict->second);
+	set_s* graph;
+	graph = MakeSet();
 	
 	int count=0;
-	
+
 	bool* tried=NULL;
-	
 	tried = calloc(nr_variables+1, sizeof(bool));
-	
+
 	ExtendSet( conflict->first, graph);
-	ExtendSet( conflict->second, graph);
 	
 	bool match;
 							
@@ -54,48 +46,41 @@ void Find_Bijection(group_s* variable_container,formula_atribute* problem, group
 	literal 							= (list_s*)mem->list;
 	group_s* group 				= (group_s*)mem->group;	
 	
-
-	
-	printf(" biject %p %p \n", variable_container, group);
+	//printf(" biject %p %p \n", variable_container, group);
 	while(1 ){
 	
 		count++;
 
-		printf ("%i %p %i assign %i prop %i assig %i cause %p init_neg %p first rem %p\n",count, group, *(int*) literal->data, problem->assignment[ abs(*(int*) literal->data) ] , problem->propagated[ abs(*(int*) literal->data) ], problem->assigned[abs(*(int*) literal->data)], problem->prop_cause[ abs( *(int*) literal->data ) ], problem->init_neg[ abs( *(int*) literal->data ) ] , problem->first_removed[abs( *(int*)literal->data)] );
+		//printf ("%i %p %i assign %i prop %i assig %i cause %p init_neg %p first rem %p known %i \n",count, group, *(int*) literal->data, problem->assignment[ abs(*(int*) literal->data) ] , problem->propagated[ abs(*(int*) literal->data) ], problem->assigned[abs(*(int*) literal->data)], problem->prop_cause[ abs( *(int*) literal->data ) ], problem->init_neg[ abs( *(int*) literal->data ) ] , problem->first_removed[abs( *(int*)literal->data)],problem->known[abs( *(int*)literal->data)] );
+		
+		// if the clauses come across the start point, return
+		if ( end == group ){
+			free( tried );
+			return (graph);
+		}
 		
 		node		= graph->first;
 
 		while( node ){
-			//printf( "node %p \n", node->data);
+			////printf( "node %p \n", node->data);
 			match = node->data == group;
 			if( match ){
 				
-				
-				
-				if ( problem->assignment[ abs(*(int*) literal->data) ] == 1 && problem->propagated[ abs(*(int*) literal->data) ]  == 0  ){
-					//this is the clause that needs reguessing
+				if ( problem->assignment[ abs(*(int*) literal->data) ] == 1 && problem->propagated[ abs(*(int*) literal->data) ]  == 0 && tried[abs(*(int*) literal->data)]==0  ){
 					
 					// append the inital neg
-					printf(" reguess another \n");
+					
+					//printf(" reguess another \n");
 					ExtendSet( problem->init_neg[abs( *(int*)literal->data )], graph);
-					halt();
-				}
-
-				if ( problem->assignment[ abs(*(int*) literal->data) ] == 0 && problem->propagated[ abs(*(int*) literal->data) ]  == 0 ){
-					//this is the clause that needs reguessing
-					printf(" reguess this %i \n",abs(*(int*) literal->data) );
-					halt();
-					RemoveSetElements( &graph );
-					free( tried );
-					return;
-				}
-				
-				if ( problem->propagated[ abs( *(int*) literal->data) ] == 1  && tried[abs(*(int*) literal->data)]==0){
-					// if this is propagated, continue on till the last  non- propagated variable
-					printf(" this is propagated from %p \n", problem->prop_cause[abs( *(int*)literal->data )] );
-					ExtendSet( problem->prop_cause[abs( *(int*)literal->data )], graph);
 					tried[abs(*(int*) literal->data)]=1;
 					//halt();
+				}
+				
+				if ( problem->propagated[ abs( *(int*) literal->data) ] == 1  && tried[abs(*(int*) literal->data)]==0 ){
+					// if this is propagated, continue on till the last  non- propagated variable
+					//printf(" this is propagated from %p \n", problem->prop_cause[abs( *(int*)literal->data )] );
+					ExtendSet( problem->prop_cause[abs( *(int*)literal->data )], graph);
+					tried[abs(*(int*) literal->data)]=1;
 				}
 				
 			}
@@ -113,10 +98,85 @@ void Find_Bijection(group_s* variable_container,formula_atribute* problem, group
 		literal 							= (list_s*)mem->list;
 		
 	}
+}
+
+// this finds where a previous literal was remvoed
+void Find_Bijection(group_s* variable_container,formula_atribute* problem, group_s* group1, lut* conflict){
+
+	list_s* literal;
+	GS_mem* mem;
+	list_s* node ;
+	set_s* graph;
+	graph = MakeSet();
 	
-		printf(" end var %i - %i  prop %i  biject %p %p \n", *(int*)((list_s*)mem->list->data), problem->assignment[ abs(*(int*)((list_s*)mem->list->data))], problem->propagated[ abs(*(int*)((list_s*)mem->list->data))], variable_container, group);
-	exit(0);
+	int count=0;
+
+	bool* tried=NULL;
+	tried = calloc(nr_variables+1, sizeof(bool));
+
+	ExtendSet( conflict->first, graph);
+	ExtendSet( conflict->second, graph);
 	
+	bool match;
+							
+	mem 								= (GS_mem*)problem->removed_set->end->data;
+	literal 							= (list_s*)mem->list;
+	group_s* group 				= (group_s*)mem->group;	
+	
+
+	
+	//printf(" biject %p %p \n", variable_container, group);
+	while(1 ){
+	
+		count++;
+
+		//printf ("%i %p %i assign %i prop %i assig %i cause %p init_neg %p first rem %p known %i \n",count, group, *(int*) literal->data, problem->assignment[ abs(*(int*) literal->data) ] , problem->propagated[ abs(*(int*) literal->data) ], problem->assigned[abs(*(int*) literal->data)], problem->prop_cause[ abs( *(int*) literal->data ) ], problem->init_neg[ abs( *(int*) literal->data ) ] , problem->first_removed[abs( *(int*)literal->data)],problem->known[abs( *(int*)literal->data)] );
+		
+		node		= graph->first;
+
+		while( node ){
+			////printf( "node %p \n", node->data);
+			match = node->data == group;
+			if( match ){
+				
+				if ( problem->assignment[ abs(*(int*) literal->data) ] == 1 && problem->propagated[ abs(*(int*) literal->data) ]  == 0  ){
+					//this is the clause that needs reguessing
+					
+					// append the inital neg
+					//printf(" reguess another \n");
+					ExtendSet( problem->init_neg[abs( *(int*)literal->data )], graph);
+					//halt();
+				}
+
+				if ( problem->assignment[ abs(*(int*) literal->data) ] == 0 && problem->propagated[ abs(*(int*) literal->data) ]  == 0 && problem->known [ abs(*(int*) literal->data)  ] == 0 ){
+					//this is the clause that needs reguessing
+					RemoveSetElements( &graph );
+					free( tried );
+					return;
+				}
+				
+				if ( problem->propagated[ abs( *(int*) literal->data) ] == 1  && tried[abs(*(int*) literal->data)]==0){
+					// if this is propagated, continue on till the last  non- propagated variable
+					//printf(" this is propagated from %p \n", problem->prop_cause[abs( *(int*)literal->data )] );
+					ExtendSet( problem->prop_cause[abs( *(int*)literal->data )], graph);
+					tried[abs(*(int*) literal->data)]=1;
+				}
+				
+			}
+			node = node->next;	
+		}
+
+		if( problem->removed_set->list->previous == NULL){
+			printf(" no previous \n");
+			exit(0);
+		}
+		
+		problem->removed_set->list = problem->removed_set->list->previous;
+		mem 								= (GS_mem*)problem->removed_set->list->data;
+		group 							= (group_s*)mem->group;	
+		literal 							= (list_s*)mem->list;
+		
+	}
 }
 
 void Reset_Guesses_Till(formula_atribute* problem){
@@ -144,7 +204,7 @@ void Reset_Guesses_Till(formula_atribute* problem){
 			break;
 		}
 		
-		printf("reset guessed %i \n", *(int*)problem->guessed_literals->end->data );
+		//printf("reset guessed %i \n", *(int*)problem->guessed_literals->end->data );
 		
 		if (  abs( *(int*)problem->guessed_literals->end->data )  == abs( *(int*)literal->data) ){
 			break;	
@@ -158,7 +218,7 @@ void Reset_Guesses_Till(formula_atribute* problem){
 
 
 bool propagate( size_t variable, formula_atribute* atribute){
-	printf(" \n propagated %lu assignemnt - %i \n ", variable, atribute->assignment[variable] );
+	//printf(" \n propagated %lu assignemnt - %i \n ", variable, atribute->assignment[variable] );
 
 	set_s** position				= atribute-> variable_position;
 	position[ variable ]->list = position[ variable ]->first;
@@ -170,7 +230,7 @@ bool propagate( size_t variable, formula_atribute* atribute){
 	
 
 	
-	printf("1\n");
+	//printf("1\n");
 	while( pos_list !=NULL){		
 	
 		mem 			= (GS_mem*)pos_list->data;
@@ -183,7 +243,7 @@ bool propagate( size_t variable, formula_atribute* atribute){
 			//if it will become an empty clause
 			if( *(int*)literal->data > 0 && atribute->assignment[ abs( *(int*)literal->data) ] == 0
 			||	 *(int*)literal->data < 0 && atribute->assignment[ abs( *(int*)literal->data) ] == 1){
-				 printf(" this will become an empty clause %i %p \n", *(int*)literal->data , group );
+				 //printf(" this will become an empty clause %i %p \n", *(int*)literal->data , group );
 				 
 				if( atribute->first_removed[abs( *(int*)literal->data)] ==NULL)
 					atribute->first_removed[abs( *(int*)literal->data)] = group;
@@ -201,13 +261,13 @@ bool propagate( size_t variable, formula_atribute* atribute){
 		
 		if( *(int*)literal->data > 0 && atribute->assignment[ abs( *(int*)literal->data) ] == 0
 		||	 *(int*)literal->data < 0 && atribute->assignment[ abs( *(int*)literal->data) ] == 1){
-			printf(" removed %i %p\n", abs(*(int*)literal->data), group);
+			//printf(" removed %i %p %p \n", *(int*)literal->data, group, 	atribute->first_removed[abs( *(int*)literal->data)] );
 
-			if( atribute->first_removed[abs( *(int*)literal->data)] ==NULL)
+			if( atribute->first_removed[abs( *(int*)literal->data)] == NULL)
 				atribute->first_removed[abs( *(int*)literal->data)] = group;
 
 			if ( RemoveFromSet(&literal, &group, &atribute->removed_set ) == 2 ){
-				printf(" ?\n ");
+				//printf(" ?\n ");
 				return 0;
 				//exit(0);
 			}
@@ -220,26 +280,29 @@ bool propagate( size_t variable, formula_atribute* atribute){
 			
 			//if it's not been assigned, assign it
 			if(atribute->assigned[ abs( *(int*)literal->data ) ] == 0){
-				//	printf(" this is implied data\n");
-				//printf(" this will produce a single %i  \n", *(int*)literal->data);
+				//	//printf(" this is implied data\n");
+				////printf(" this will produce a single %i  \n", *(int*)literal->data);
 
 				atribute->propagated[abs( *(int*)literal->data )] = 1;	
 				atribute->assigned[ abs( *(int*)literal->data ) ] = 1 ;
 				
 				atribute->prop_cause[abs( *(int*)literal->data )] = group;
-					
+				
+				
+				//printf(" assigned %i \n", *(int*)literal->data);
+				
 				if( *(int*)literal->data > 0 ){
-				// 	printf( "assigned 1 \n");
+				// 	//printf( "assigned 1 \n");
 					atribute->assignment[ abs( *(int*)literal->data ) ] = 1;
 				}else{
-				//	printf( "assigned 0 \n");
+				//	//printf( "assigned 0 \n");
 					atribute->assignment[ abs( *(int*)literal->data ) ] = 0;
 				}
 				
 				
 				// propagate -- return 0 if mis match
 				if( propagate( abs( *(int*)literal->data ) , atribute) == 0){
-					printf(" nope \n");
+					//printf(" nope \n");
 					//ReinstateVariable( &atribute->removed_set );
 					//atribute->assigned[ abs( *(int*)literal->data ) ] = 0 ;
 					//GroupReduceSet( atribute->guessed_literals->end, &atribute->guessed_literals);
@@ -252,7 +315,7 @@ bool propagate( size_t variable, formula_atribute* atribute){
 		pos_list = pos_list->next;
 
 	}
-	printf(" returned \n");
+	//printf(" returned \n");
 
 	return 1;
 }
@@ -268,7 +331,7 @@ int main(int argc, char* argv[]){
 	formula_atribute* problem	= malloc ( sizeof(*problem));
 	
 	problem->formula				= MakeGroup();
-	problem->variable_position;
+	
 	
 	problem->pre_set				= MakeSet();
 
@@ -283,6 +346,11 @@ int main(int argc, char* argv[]){
 	problem->removed_set			= MakeSet();
 	problem->removed_list		= MakeSet();
 	problem->guessed_literals	= guessed_literals;
+	
+	problem->known = calloc( nr_variables, sizeof(bool));
+	
+	
+	//printf(" var coun %i \n", nr_variables);
 	
 	problem->prop_cause= calloc(	nr_variables, sizeof(void*) ); 
 	for ( int i = 0; i <nr_variables; i++){
@@ -313,8 +381,12 @@ int main(int argc, char* argv[]){
 	list_s* address_rem;
 	list_s* literal;
 	group_s* group;
+	
 	GS_mem* mem;
 	lut* conflict = malloc( sizeof(*conflict));
+	
+	set_s* implication = MakeSet();
+	
 	group_s* previous_temp;
 	int temp_literal;
 	bool temp_bool;
@@ -326,133 +398,124 @@ int main(int argc, char* argv[]){
 	// propagate the set variables
 	problem->pre_set->list = problem->pre_set->first;
 	while (problem->pre_set->list !=NULL){
-	printf("pre_Set -%i \n", *(int*)problem->pre_set->list->data);
-	
+	//printf("pre_Set -%i \n", *(int*)problem->pre_set->list->data);
+		problem->assigned[ abs( *(int*)problem->pre_set->list->data)  ] 	= 1;
+		
+		problem->known [ abs( *(int*)problem->pre_set->list->data)  ] 	= 1;
+		
+		if (*(int*)problem->pre_set->list->data > 0){
+			problem->assignment[ abs( *(int*)problem->pre_set->list->data)  ] 	= 1; 
+		}else{
+			problem->assignment[ abs( *(int*)problem->pre_set->list->data)  ] 	= 0; 
+		}
 		if(!propagate( abs( *(int*)problem->pre_set->list->data ), problem) ){
-			printf(" not doable \n");
+			//printf(" not doable \n");
 			exit(0);
 		}
 		problem->pre_set->list= problem->pre_set->list->next;
 		
-	}
-
-	printf(" ***************************************************************\n\n\n");
-	while(  clause != NULL ){
-
-		// variable
-		variable_container		 = (group_s*)clause->data;
-		variable_container->list = variable_container ->first;
-		variable						 = variable_container->list;
 		
-		while( variable !=NULL ){
-			//printf(" var->dat %i \n", *(int*)variable->data);
-			
+	}
+//halt();
+	//printf(" ***************************************************************\n\n\n");
+	for ( int variable =1; variable<= nr_variables; variable++){
+			//printf(" var->dat %i %i \n", variable, assigned[ variable] );
 			// been assigned?
-			if( assigned[ abs( *(int*)variable->data ) ] == 0 ){
+			if( assigned[ abs( variable ) ] == 0 ){
 			
 				// assign
-				assigned[ abs( *(int*)variable->data ) ] 		= 1;
-				assignment[ abs( *(int*)variable->data ) ] 	= 0; 
+				//printf(" assigning this %i \n", variable);
+				assigned[ abs( variable ) ] 		= 1;
+				assignment[ abs( variable ) ] 	= 0; 
 				guessed													= malloc( sizeof( *guessed) );
-				*guessed													= *(int*)variable->data;
+				*guessed													= variable;
 
 				ExtendSet( guessed , guessed_literals);
 				
-				printf(" \n init guessed %i %i \n", *(int*)variable->data, 0 );
+				//printf(" \n init guessed %i  \n", variable );
 				
-				if( problem->removed_set->end != NULL){
-					previous_temp = (group_s*)((GS_mem*) problem->removed_set->end->data)->group;
-					temp_literal= 	*(int*)previous_temp->list->data ;
-				}
 				
-				printf("pre-prop %i \n", *(int*)guessed_literals ->end->data	);
-					
+
 				//propagate
-				while( !propagate( abs( *(int*)guessed_literals ->end->data ), problem)  ){
-						variable = guessed_literals->end;
+				while( !propagate( abs( variable ), problem)  ){
 					
 					if( problem->guessed_literals->end ==NULL){
-						printf ("No data \n");
+						//printf ("No data \n");
 						exit(0);
 					}
 					
-					temp_bool = assignment[ abs( *(int*)variable->data ) ] ;
+					temp_bool = assignment[ abs( variable ) ] ;
 					
 					m1 = (GS_mem*) problem->removed_set->end->data;
 					l1 = (list_s*)m1->list;		
 					group = (group_s*) m1->group;	
 					
-					printf(" pre reset %p \n", m1->group);
-					printf(" assignment %i %i %p \n", abs( *(int*)variable->data), temp_bool, previous_temp );
+					//printf(" pre reset %p \n", m1->group);
+					//printf(" assignment %i %i %p \n", abs( variable), temp_bool, previous_temp );
 					
 					// this saves the address fo the clause of the conflict
 					if( temp_bool == 0 ){
+						ResetSet( implication);
+						ExtendSet( m1->group, implication);
+						Find_Partial_Bijection(group_s* end, group_s* variable_container,formula_atribute* problem, group_s* group1, lut* conflict){
+					
 						conflict->first = m1->group;
 						
 					}else{
-						conflict->second = m1->group;
+						ExtendSet( m1->group, implication);
 					}
 
-	m1		 = (GS_mem*) problem->removed_set->end->data;
-						l1		 = (list_s*)m1->list;		
-						group	 = (group_s*) m1->group;
 					// reset to the point this was guessed
 					while(1 ){
-					//	printf("		reset %i %p %p\n",*(int*)l1->data , m1->group,problem->first_removed[abs( *(int*)l1->data)] );
-						
+						////printf(" group %p first rem %p l1 %i var %i \n", group, problem->first_removed[ variable] , abs(*(int*)l1->data), variable); 
+						////printf(" reinstated %i at %p  %i \n", *(int*)l1->data, group, problem->known[*(int*)l1->data] );
 						if( problem->first_removed[abs( *(int*)l1->data)] == group ){
-							problem->first_removed[abs( *(int*)l1->data)] =NULL;
-							assignment[ abs( *(int*)l1->data ) ]				= 0;
-							assigned[ abs( *(int*)l1->data ) ]					= 0;
-							propagated[ abs( *(int*)l1->data ) ]				= 0;
-							problem->prop_cause[ abs( *(int*)l1->data ) ]	= NULL;
-							GroupReduceSet( problem->guessed_literals->end, &problem->guessed_literals);
+							problem->assignment[ abs( *(int*)l1->data ) ]		= 0;
+							problem->assigned[ abs( *(int*)l1->data ) ]			= 0;
+							problem->propagated[abs( *(int*)l1->data )] 			= 0;
+							problem->first_removed[ abs( *(int*)l1->data) ]=NULL;
 						}
-						
-						//
-						
+						if(group == problem->first_removed[ variable] && abs(*(int*)l1->data) == variable ){
+							ReinstateVariable( &problem->removed_set );
+					 		break;
+					 	}
 						ReinstateVariable( &problem->removed_set );
 						
 						if(problem->removed_set->end == NULL)
-							break;
+							exit(0);;
 					
 						m1		 = (GS_mem*) problem->removed_set->end->data;
 						l1		 = (list_s*)m1->list;		
 						group	 = (group_s*) m1->group;
 						
-						if(group == problem->first_removed[abs( *(int*)l1->data)] ){
+						if(group == problem->first_removed[ variable] && abs(*(int*)l1->data) == variable ){
 							ReinstateVariable( &problem->removed_set );
 					 		break;
 					 	}
 					}
+					problem->first_removed[ variable ]=NULL;
 
-					
+					// if the variable under test was guessed 0
+					// flip the guess
 					if ( temp_bool == 0 ){
-						problem->init_neg[abs(*(int*)variable->data )] = m1->group;
-						printf(" resasigned %i \n", abs( *(int*)variable->data));
-						assignment[ abs( *(int*)variable->data ) ] = 1;
-						assigned[ abs( *(int*)variable->data ) ]	 = 1;
-						halt();
+						problem->init_neg[abs(variable )] = m1->group;
+						//printf(" reasigned %i \n", abs( variable));
+						assignment[ abs( variable ) ]  = 1;
+						assigned[ abs( variable ) ]	 = 1;
+						//halt();
 						continue;
-						
 					}else{
 						
-						set_s** position										 = problem-> variable_position;
-						position[ abs(*(int*)variable->data)  ]->list = position[ abs(*(int*)variable->data) ]->first;
-						list_s* pos_list										 = position[ abs(*(int*)variable->data) ]->list;
-						mem = (GS_mem*)pos_list->data;
-						literal = mem->list;
-						group		= mem->group;
-						printf("1\n");
-						printf(" pre reset %p \n", m1->group);
-						printf("this address %p %p \n", conflict->first, conflict->second);
-						
-						temp = m1->group;
+						set_s** position							= problem-> variable_position;
+						position[ abs(variable)  ]->list 	= position[ abs(variable) ]->first;
+						list_s* pos_list							= position[ abs(variable) ]->list;
+						mem 											= (GS_mem*) pos_list->data;
+						literal	 									= mem->list;
+						group											= mem->group;
+						temp											= m1->group;
 						
 						while( pos_list !=NULL){
-						
-							printf( "address %p - %i  \n", group, *(int*) literal->data);
-							
+							//printf( "address %p - %i  \n", group, *(int*) literal->data);
 							pos_list	= pos_list->next;	
 							if(pos_list==NULL)
 								break;
@@ -461,6 +524,7 @@ int main(int argc, char* argv[]){
 							group		= (group_s*)mem->group;			
 						}
 						
+						
 						problem->removed_set->list = problem->removed_set->end;
 						mem 								= (GS_mem*)problem->removed_set->list->data;
 						literal 							= (list_s*)mem->list;
@@ -468,48 +532,61 @@ int main(int argc, char* argv[]){
 						
 						problem->guessed_literals->list = problem->guessed_literals->end;
 						
-						printf(" %i %i %i %i\n", problem->propagated[ abs(*(int*)variable->data)], *(int*)variable->data, assigned[ abs(*(int*)variable->data) ], assignment[ abs(*(int*)variable->data) ] );
+						//printf(" %i %i %i %i\n", problem->propagated[ abs(variable)], variable, assigned[ abs(variable) ], assignment[ abs(variable) ] );
 						
 						//find a previous remove
 						Find_Bijection(variable_container,problem, group, conflict);
 
-						//mem 			= (GS_mem*)problem->removed_set->list->data;
-						//literal 		= (list_s*)mem->list;
-						//group 		= (group_s*)mem->group;	
+						mem 			= (GS_mem*)problem->removed_set->list->data;
+						literal 		= (list_s*)mem->list;
+						group 		= (group_s*)mem->group;	
 						reset_too 	= *(int*) literal->data;
 						
 						Reset_Guesses_Till(problem);
 						
 						if ( problem->guessed_literals->end ==NULL){
-							printf("exhausted all the guesses \n");
+							//printf("exhausted all the guesses \n");
 							exit(0);
 						}
 
-						printf(" comp \n");
+						//printf(" comp \n");
 						
+						// reset as it's about to run down another branch
+						mem 		= (GS_mem*) problem->removed_set->end->data;
+						literal  = (list_s*)mem->list;	
+						group 	= (group_s*)mem->group;						
 						while( 1 ){
-							
+							////printf(" %p %p %i %i  \n", group, problem->first_removed[abs( reset_too )], *(int*) literal->data, reset_too );
+						
+							if(group == problem->first_removed[abs( *(int*)literal->data)] ){
+								problem->assignment[ abs( *(int*)literal->data ) ]		= 0;
+								problem->assigned[ abs( *(int*)literal->data ) ]		= 0;
+								problem->propagated[abs( *(int*)literal->data )] 		= 0;
+								problem->prop_cause [ abs( *(int*)literal->data ) ] 	= NULL;
+								problem->init_neg[ abs(*(int*)literal->data) ] 			= NULL;
+								problem->first_removed [ abs( *(int*)literal->data ) ] = NULL;
+								ReinstateVariable( &problem->removed_set );
+						 	}
+
+								
 							mem 		= (GS_mem*) problem->removed_set->end->data;
 							literal  = (list_s*)mem->list;	
-							group 	= (group_s*)mem->group;
-							
-							printf(" %p %p %i %i  \n", group, problem->first_removed[abs( reset_too )], *(int*) literal->data, *(int*) l1->data );
-
-						
-							
+							group 	= (group_s*)mem->group;			
+							ReinstateVariable( &problem->removed_set );				
 							if ( *(int*)literal->data == reset_too && group == problem->first_removed[abs( *(int*)literal->data)] ){
+							
 								mem = (GS_mem*) problem->removed_set->end->data;
 								literal = (list_s*)mem->list;	
 								group = (group_s*)mem->group;
-								printf(" end %p %p %i %i  \n", group, problem->first_removed[abs( reset_too )], *(int*) literal->data, *(int*) l1->data );
-								halt();
+								ReinstateVariable( &problem->removed_set );
+								//printf(" end %p %p %i %i  \n", group, problem->first_removed[abs( reset_too )], *(int*) literal->data, reset_too);
+								//halt();
 								break;
 							}		
-								ReinstateVariable( &problem->removed_set );
 						}
 
 						if( problem->removed_set->end == NULL){
-							printf(" null end \n");
+							//printf(" null end \n");
 							exit(0);
 						}
 						
@@ -522,33 +599,17 @@ int main(int argc, char* argv[]){
 						*(int*)literal->data = reset_too;
 						*guessed = reset_too;
 						ExtendSet( guessed , guessed_literals);
-						printf("reassignement %i %i %i \n",  reset_too , *(int*)literal->data, *(int*)guessed_literals ->end->data	);
+						//printf("reassignement %i %i  \n",  reset_too , *(int*)literal->data	);
 						//exit(0);
 						//clause 							= group->list;
-						variable_container		 	= (group_s*)clause_container->first;;
-						//variable_container->list 	= variable_container ->first;
-						//variable						 	= variable_container->list	;
-						//clause					= clause_container->first;
-						//variable					= ( (group_s*) clause->data)->first	;
-						//literal = variable;
+						variable = *(int*)literal->data	;
+						//halt();
 						continue;
 
 					}
-					printf(" didn't continue\n");
 				}
 			}
-			
-			
-			
-			if( variable->next == NULL)
-				break;
-		
-			variable= variable->next;
-		
-		}
-		if( clause->next == NULL)
-			printf("no clause\n");
-		clause = clause->next;
+
 	}
 	
 	//output results
@@ -565,7 +626,7 @@ int main(int argc, char* argv[]){
 	free( problem->assignment);
 	free( problem->assigned);
 	free(problem);
-	printf(" finished \n");
+	//printf(" finished \n");
 	return 0;
 
 

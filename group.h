@@ -48,6 +48,8 @@ void DeleteGroup(group_s**);
 
 set_s* NextSet(group_s*);
 set_s* PreviousSet(group_s*);
+void ResetSet(set_s**);
+
 
 set_s** MakeSetArray( size_t );
 void FreeSetArray ( set_s** , size_t);
