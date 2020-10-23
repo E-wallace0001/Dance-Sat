@@ -120,6 +120,7 @@ int RemoveFromSet(list_s** list_t1, group_s** set, set_s** removed_set ){
 	//printf(" removed %i \n", *(int*) (*list_t1)->data);
 	if(list_t->previous!=NULL){
 		if(list_t->next!=NULL){
+		
 			list_t->previous->next	= list_t->next;
 			list_t->next->previous	= list_t->previous;
 			(*set)->list= list_t->previous;
@@ -204,7 +205,7 @@ void ReinstateVariable(set_s** removed_set){
 	}
 	set->list= set->first;
 	
-	//free( (*removed_set)->end->data);
+	free( (*removed_set)->end->data);
 	GroupReduceSet( (*removed_set)->end, removed_set);
 	(*removed_set)->list = (*removed_set)->end;
 }
@@ -245,7 +246,7 @@ void DelSet(set_s** set){
 void ResetSet(set_s** set){
 
 	while((*set)->end!=NULL){
-		free((*set)->end->data);
+		//free((*set)->end->data);
 		GroupReduceSet( (*set)->end , (set) );
 	}
 }

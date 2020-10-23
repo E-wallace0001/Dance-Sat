@@ -22,6 +22,8 @@ typedef struct formula_atribute{
 	void** init_neg;
 	void** first_removed;
 	
+	struct hash_t* h_table;
+	
 }formula_atribute;
 
 int nr_variables, nr_clauses;

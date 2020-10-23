@@ -3,7 +3,7 @@
 
 typedef struct hasht_bucket{
 	
-	int clause;
+	int64_t clause;
 	struct hasht_bucket *previous;
 	struct hasht_bucket *next;
 	struct hasht_bucket *end;
@@ -14,18 +14,19 @@ typedef struct hasht_bucket{
 
 typedef struct hash_t{
 	struct hasht_bucket** 	table;
-	size_t size;
+	int64_t size;
 
 }hash_t;
 
 
-hash_t* hasht_create(size_t );
+hash_t* hasht_create(int64_t );
 
-void table_add( size_t , hash_t* );
+void table_add( int64_t , hash_t* );
 
-bool check_table(size_t , hash_t* );
+bool check_table(int64_t , hash_t* );
 
 void hash_t_destroy( hash_t** );
 
+void hash_t_empty( hash_t**);
 
 #endif

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "h_table.h"
 
@@ -20,7 +21,7 @@ hasht_bucket* hasht_indx_create(){
 	return indx;
 }
 
-hash_t* hasht_create(size_t size){
+hash_t* hasht_create(int64_t size){
 
 
 	hash_t* h_table = malloc(sizeof(*h_table));
@@ -31,7 +32,7 @@ hash_t* hasht_create(size_t size){
 	h_table->table	= table;
 	h_table->size	= size;
 
-	for( size_t i = 0; i<=size; i++){
+	for( int64_t i = 0; i<=size; i++){
 		table[i]=hasht_indx_create();
 	}
 return h_table;
@@ -42,14 +43,14 @@ void bucket_end_del( hasht_bucket** bucket_list){
 	
 	hasht_bucket* list = (*bucket_list)->first->end;
 
-		list->first->end= list->previous;
-		list->previous->next=NULL;
+	list->first->end= list->previous;
+	list->previous->next=NULL;
 	
 	free(list);
 
 }
 
-hasht_bucket* hasht_add(size_t val, hasht_bucket* list){
+hasht_bucket* hasht_add(int64_t val, hasht_bucket* list){
 
 
 	hasht_bucket* indx	= hasht_indx_create();
@@ -62,11 +63,11 @@ hasht_bucket* hasht_add(size_t val, hasht_bucket* list){
 }
 
 
-size_t hashval( size_t val, hash_t* ht){
+int64_t hashval( int64_t val, hash_t* ht){
 	return val % ht->size;
 }
 
-bool check_table(size_t val, hash_t* ht){
+bool check_table(int64_t val, hash_t* ht){
 
 	hasht_bucket** table= ht->table;
 	if( table==NULL) {
@@ -74,7 +75,7 @@ bool check_table(size_t val, hash_t* ht){
 		exit(0);
 	}
 
-	size_t hash = hashval(val, ht);
+	int64_t hash = hashval(val, ht);
 
 	hasht_bucket* indx = table[hash];
 
@@ -97,7 +98,7 @@ bool check_table(size_t val, hash_t* ht){
 	}
 }
 
-void table_add( size_t val, hash_t* ht){
+void table_add( int64_t val, hash_t* ht){
 
 	hasht_bucket** table = ht->table;
 
@@ -118,10 +119,10 @@ void table_add( size_t val, hash_t* ht){
 void hash_t_destroy( hash_t** ht){
 
 
-	size_t size					= (*ht)->size;
+	int64_t size					= (*ht)->size;
 	hasht_bucket** table		= (*ht)->table;
 	
-	for(size_t i = 0; i<=size; i++){
+	for(int64_t i = 0; i<=size; i++){
 	
 		while(table[i]->first->end->previous != NULL){
 			bucket_end_del( &table[i] );
@@ -133,4 +134,18 @@ void hash_t_destroy( hash_t** ht){
 	ht = NULL;
 }
 
+void hash_t_empty( hash_t** ht){
+
+
+	int64_t size					= (*ht)->size;
+	hasht_bucket** table		= (*ht)->table;
+	
+	for(int64_t i = 0; i<=size; i++){
+	
+		while(table[i]->first->end->previous != NULL){
+			bucket_end_del( &table[i] );
+		}
+		//free(table[i]);
+	}
+}
 
