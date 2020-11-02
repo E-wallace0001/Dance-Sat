@@ -1,2 +1,1 @@
-gcc -g dance_sat.c  h_table.c cnf_llist.c group.c -o dsat
-
+gcc -g source/dance_sat.c  source/h_table.c source/cnf_llist.c source/group.c source/graph.c -o dance_sat  
