@@ -5,10 +5,10 @@ The basic algorithm leverages the power of C with Knuth's Dancing Links algorith
 
 The next version will include clause learning.
 
-##Use
+## Use
 ./dance_sat *.cnf
 fini.cnf will be created, and the results posted to this file.
 
-##compilation
+## compilation
 Compilation can be done simply with ./make.sh
 
