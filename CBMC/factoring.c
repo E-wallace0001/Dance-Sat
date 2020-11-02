@@ -5,8 +5,8 @@
 #include <stdint.h>
 int main(){
 
-	long long z, a ,b;
-	long long  prime =7	;
+	int z, a ,b;
+	int  prime =7	;
 	bool found=0;
 	//x=5;
 	

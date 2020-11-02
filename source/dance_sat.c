@@ -57,11 +57,7 @@ void Find_Partial_Bijection(group_s* end, formula_atribute* problem, hash_t* h_t
 					
 				// append the inital neg
 					
-				////////printf(" reguess another \n");
-				//ExtendSet( problem->init_neg[abs( *(int*)literal->data )], graph);
-				//tried[abs(*(int*) literal->data)]=1;
 				table_add( (int64_t)problem->init_neg[abs( *(int*)literal->data )], h_table);
-				//halt();
 				tried[abs(*(int*) literal->data)]=1;
 				count++;
 			}
@@ -69,16 +65,12 @@ void Find_Partial_Bijection(group_s* end, formula_atribute* problem, hash_t* h_t
 
 			if ( problem->assignment[ abs(*(int*) literal->data) ] == 0 && problem->propagated[ abs(*(int*) literal->data) ]  == 0 && problem->known [ abs(*(int*) literal->data)  ] == 0 ){
 				//this is the clause that needs reguessing
-				//RemoveSetElements( &graph );
 				free( tried );
 				return;
 			}
 				
 			if ( problem->propagated[ abs( *(int*) literal->data) ] == 1  && tried[abs(*(int*) literal->data)]==0 ){
 				// if this is propagated, continue on till the last  non- propagated variable
-				////////printf(" %i this is propagated from %p \n",count, problem->prop_cause[abs( *(int*)literal->data )] );
-				//ExtendSet( problem->prop_cause[abs( *(int*)literal->data )], graph);
-				//printf(" %i ", *(int*)literal->data );
 				table_add( (int64_t)problem->prop_cause[abs( *(int*)literal->data )], h_table);
 				tried[abs(*(int*) literal->data)]=1;
 				count++;
@@ -88,7 +80,7 @@ void Find_Partial_Bijection(group_s* end, formula_atribute* problem, hash_t* h_t
 	
 
 		if( problem->removed_set->list->previous == NULL){
-			////////printf(" no previous bijection \n");
+			printf(" no previous bijection \n");
 			exit(0);
 			return;
 		}
@@ -129,7 +121,6 @@ void Find_Bijection(formula_atribute* problem){
 	int size_new_clause =0;
 	
 	bool save_ret =0 ;
-	
 	
 	list_s* saved;
 	
@@ -173,9 +164,6 @@ void Find_Bijection(formula_atribute* problem){
 		if( problem->removed_set->list->previous == NULL){
 			printf(" no previous %i \n", size_new_clause);
 			problem->removed_set->list = saved;
-			free( tried );	
-			//halt();
-			return;
 			exit(0);
 		}
 		
@@ -185,7 +173,6 @@ void Find_Bijection(formula_atribute* problem){
 		literal 							= (list_s*)mem->list;
 		
 	}
-	exit(0);
 }
 
 bool propagate( int variable, formula_atribute* atribute){
@@ -199,7 +186,6 @@ bool propagate( int variable, formula_atribute* atribute){
 	group_s* group;
 	GS_mem* mem;
 
-	////////printf("1\n");
 	while( pos_list !=NULL){		
 	
 		mem 			= (GS_mem*)pos_list->data;
@@ -259,8 +245,6 @@ bool propagate( int variable, formula_atribute* atribute){
 					//assign false
 					atribute->assignment[ abs( *(int*)literal2->data ) ] = 0;
 				}
-
-
 					
 				// propagate -- return 0 if mis match
 				if( propagate( abs( *(int*)literal2->data ) , atribute) == 0){
@@ -293,6 +277,11 @@ int main(int argc, char* argv[]){
 	// imports cnf into local memory
 	read_cnf_list(argv[1], problem);
 	
+	// exports the formula in a new numerical order has shown.
+	char name2[20] = "DIMACS/num2.cnf";
+	export_cnf(name2, problem->formula);
+
+	// memory pre set
 	bool changed_clause 			= 0;
 	bool* assigned 				= problem->assigned;
 	bool* assignment				= problem->assignment;
@@ -303,26 +292,19 @@ int main(int argc, char* argv[]){
 	problem->guessed_literals	= guessed_literals;
 	problem->h_table				= hasht_create( 125537);
 
-	//printf("nr var %i %li \n ", nr_variables, total_lit);
-
 	problem->known = calloc( nr_variables, sizeof(bool));
-	
 	problem->formula->list = problem->formula->first;	
-	char name2[20] = "DIMACS/num2.cnf";
-	export_cnf(name2, problem->formula);
-	////////printf(" var coun %i \n", nr_variables);
-	
 	problem->prop_cause= calloc(	total_lit+1, sizeof(void*) );
 	problem->init_neg= calloc(	total_lit+1, sizeof(void*) ); 
 	problem->first_removed= calloc(	total_lit+1, sizeof(void*) ); 
  
 	for ( unsigned int i = 0; i <=total_lit+1; i++){
-		problem->prop_cause[i] = malloc( sizeof(void*));
-		problem->prop_cause[i]= NULL;
-		problem->init_neg[i] = malloc( sizeof(void*));
-		problem->init_neg[i]= NULL;
-		problem->first_removed[i] = malloc( sizeof(void*));
-		problem->first_removed[i]= NULL;
+		problem->prop_cause[i]	 	= malloc( sizeof(void*));
+		problem->prop_cause[i]	 	= NULL;
+		problem->init_neg[i]		 	= malloc( sizeof(void*));
+		problem->init_neg[i]		 	= NULL;
+		problem->first_removed[i]	= malloc( sizeof(void*));
+		problem->first_removed[i]	= NULL;
 	}
 
 
@@ -352,19 +334,15 @@ int main(int argc, char* argv[]){
 	
 	// mem init end
 	
-	// propagate the set variables
-	
+	// propagate the pre-set variables
 	problem->pre_set->list = problem->pre_set->first;
 	while (problem->pre_set->list !=NULL){
 		problem->known[ abs( *(int*)problem->pre_set->list->data)  ] 	= 1;
-		
 		if(!propagate( abs( *(int*)problem->pre_set->list->data ), problem) ){
 			printf(" not doable \n");
 			exit(0);
 		}
 		problem->pre_set->list= problem->pre_set->list->next;
-		
-		
 	}
 	
 	
@@ -385,42 +363,31 @@ int main(int argc, char* argv[]){
 	problem->pre_set->list = problem->pre_set->first;
 	loop = problem->pre_set->first;
 	
-	
+	// organizes the variables that are related to each other n levels deep
 	for( unsigned int var =1 ; var<= total_lit; var++){
-	//while(loop){
-		//n1 = malloc(sizeof(*n1));
-		//*n1 = var;
-		//ExtendSet(n1, var_list);
-		//InsertNumToSet( abs(var), var_list );
-		//	var = *(int*)loop->data;
-		
 		graph( abs(var), var_list, graphed, layer, limit, problem);
-		//loop=loop->next;
-		//*(int*)loop->data
-		
 	}
-	//var_list = problem->pre_set;
 	
-	
-	//printf(" k %i \n", k);
-	var_list->list = var_list->first;
-	
-	list_s* add_temp = var_list->list;
+	// this memorizes the position of the variable for backjumping	
+	var_list->list 	= var_list->first;
+	list_s* add_temp 	= var_list->list;
 	
 	list_s** address_recall = calloc ( total_lit+1 ,sizeof(*address_recall));
 	while( add_temp ){
 		address_recall[ abs( *(int*) add_temp->data ) ] = add_temp ;
 		add_temp = add_temp->next;
 	}
+
+
+	// main algo go go
+	
 	printf(" start !\n");
 	list_s* var_loop = var_list->first;
-	//for ( int variable =1; variable<=total_lit; variable++){
 	int variable;
 	while( var_loop){
 	
 			variable = *(int*) var_loop->data;
 	
-			//printf(" var->dat %i %i \n", variable, problem->assigned[ variable] );
 			// been assigned?
 			if( problem->assigned[ abs( variable ) ] == 0 ){
 				// assign
@@ -430,26 +397,27 @@ int main(int argc, char* argv[]){
 
 				//propagate
 				while( !propagate( abs( variable ), problem)  ){
-					//printf(" variable fail %i \n", variable);
 					
 					temp_bool = problem->assignment[ abs( variable ) ] ;
 					
-					m1 = (GS_mem*) problem->removed_set->end->data;
-					l1 = (list_s*)m1->list;		
-					group = (group_s*) m1->group;	
+					m1 		= (GS_mem*) problem->removed_set->end->data;
+					l1 		= (list_s*)m1->list;		
+					group 	= (group_s*) m1->group;	
 					
 					// this saves the address fo the clause of the conflict
 					if( temp_bool == 0 ){
+					
 						//empty the hash table for new collision
 						hash_t_empty( &problem->h_table );
 						
 						table_add( (int64_t)group, problem->h_table);
 						
 						Find_Partial_Bijection( problem->first_removed[ abs( variable ) ] , problem,  problem->h_table);
+						
 						conflict->first = m1->group;
+						
 					}else{
 						table_add( (int64_t)group, problem->h_table);
-						//conflict->second = m1->group;
 					}
 					
 					m1		 = (GS_mem*) problem->removed_set->end->data;
@@ -458,12 +426,11 @@ int main(int argc, char* argv[]){
 					
 					// reset to the point this was guessed
 					while(1 ){	
-						////////printf(" group %p first rem %p l1 %p var %i %i  \n", group, problem->first_removed[ variable] , problem->first_removed[abs(*(int*)l1->data)], variable, *(int*)l1->data ); 
+
 						if(group == problem->first_removed[ abs(variable) ] && abs(*(int*)l1->data) == abs(variable) ){
 							problem->assignment[ abs( *(int*)l1->data)  ]	= 0;
 							problem->assigned[ abs( *(int*)l1->data) ]		= 0;
 							problem->propagated[abs( *(int*)l1->data)] 		= 0;
-							
 							problem->prop_cause [ abs( *(int*)l1->data) ] 	= NULL;
 							problem->init_neg[abs(*(int*)l1->data)] 			= NULL;
 							problem->first_removed [ abs(*(int*)l1->data)]  = NULL;
@@ -471,16 +438,13 @@ int main(int argc, char* argv[]){
 					 		break;
 					 	}
 					 	
-						////////printf(" reinstated %i at %p  %i \n", *(int*)l1->data, group, problem->known[*(int*)l1->data] );
 						if( problem->first_removed[abs( *(int*)l1->data)] == group ){
 							problem->assignment[ abs( *(int*)l1->data)  ]	= 0;
 							problem->assigned[ abs( *(int*)l1->data) ]		= 0;
 							problem->propagated[abs( *(int*)l1->data)] 		= 0;
-							
 							problem->prop_cause [ abs( *(int*)l1->data) ] 	= NULL;
 							problem->init_neg[abs(*(int*)l1->data)] 			= NULL;
 							problem->first_removed [ abs(*(int*)l1->data)]  = NULL;
-							
 						}
 
 						ReinstateVariable( &problem->removed_set );
@@ -496,7 +460,7 @@ int main(int argc, char* argv[]){
 						
 					}
 					
-					problem->first_removed[abs( variable )]=NULL;
+					problem->first_removed[abs( variable )] = NULL;
 
 					// if the variable under test was guessed 0, flip the guess
 					if ( temp_bool == 0 ){
@@ -511,8 +475,6 @@ int main(int argc, char* argv[]){
 						literal 							= (list_s*)mem->list;
 						temp 								= group;
 						
-						printf(" %i %i %i %i\n", *(int*) literal->data, variable, assigned[ abs(variable) ], assignment[ abs(variable) ] );
-						//halt();
 						//find a previous remove
 						Find_Bijection(problem);
 
@@ -527,7 +489,6 @@ int main(int argc, char* argv[]){
 						group 		= (group_s*)mem->group;	
 						
 						while( 1 ){
-							//////////printf(" %p %p %i %i  \n", group, problem->first_removed[abs( reset_too )], *(int*) literal->data, reset_too );
 
 						 	if ( abs(*(int*)literal->data) == abs(reset_too) && group == problem->first_removed[abs( reset_too )] ){
 								problem->assignment[ abs( *(int*)literal->data ) ]		 = 0;
@@ -579,19 +540,11 @@ int main(int argc, char* argv[]){
 		var_loop = var_loop->next;
 	}
 	
-	/*for( int i = 1; i <= total_lit; i++){
-		//printf(" var %i assinged %i assignment %i \n",i,assigned[ i],assignment[ i]);
-	}
-	*/
-	//output results
-
-	// scratch end	
-	//DeleteGroup(&problem->formula);
-	//FreeSetArray(problem->variable_position,total_lit);
-	//DelSet( &problem->removed_set);
 	//DelSet( &guessed_literals);
+	
+	// exports the completed set of variables
 	problem->formula->list = problem->formula->first;	
-	char name[10] = "fini2.cnf";
+	char name[10] = "fini.cnf";
 	export_cnf(name, problem->formula);
 		
 	free( problem->assignment);
