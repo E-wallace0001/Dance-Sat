@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "h_table.h"
+#include "../source/headers/h_table.h"
 
 int main(){
 
@@ -43,6 +43,8 @@ int main(){
 	
 	printf(" deleteing hash table \n");
 	hash_t_destroy( &h_table);
+	
+	printf(" Finished with no problems \n");
 	
 	return 0;
 }

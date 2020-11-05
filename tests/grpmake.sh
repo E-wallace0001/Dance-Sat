@@ -1,2 +1,2 @@
-gcc -g group_test.c  h_table.c cnf_llist.c group.c -o grp
+gcc -g group_test.c ../source/h_table.c ../source/cnf_llist.c ../source/group.c -o grp
 

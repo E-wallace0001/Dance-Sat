@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "group.h"
+#include "../source/headers/group.h"
 
 int main(){
 
