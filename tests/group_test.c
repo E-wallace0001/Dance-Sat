@@ -227,11 +227,27 @@ int main(){
 		sum+=*(int*)s1->list->data;
 		s1->list=s1->list->next;
 	}
+	
 		
 	assert( sum == 5);
 	
 	sum = 0;
+	removed_set->list=removed_set->first;
 	printf( " count set %i \n",CountGroupSet(removed_set) );
+
+
+		sum =0;	
+		num = malloc(sizeof(*num));
+		*num = 3;
+		s1->list = s1->first;
+		SetPostInsert( num, &s1);
+		s1->list = s1->first;
+		while(s1->list!=NULL){
+			printf(" num %i \n", *(int*)s1->list->data);
+			sum+=*(int*)s1->list->data;
+			s1->list=s1->list->next;
+		}
+	
 	/*
 	ReinstateVariable(&removed_set );
 	

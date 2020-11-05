@@ -17,7 +17,8 @@ typedef struct formula_atribute{
 	set_s* guessed_literals;
 	set_s* removed_list;
 	set_s* pre_set;
-	
+
+	void** propagated_end;	
 	void** prop_cause;
 	void** init_neg;
 	void** first_removed;

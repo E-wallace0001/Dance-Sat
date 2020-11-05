@@ -59,4 +59,7 @@ void CopyGroupSet(set_s*, set_s*);
 
 int CountGroupSet(set_s*);
 
+void SetPostInsert( void*  , set_s** );
+
+
 #endif

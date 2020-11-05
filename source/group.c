@@ -12,6 +12,15 @@ set_s* MakeSet(){
 	return NewSet;
 }
 
+list_s* MakeList(void* data){
+	list_s* NewMember			= malloc(sizeof(*NewMember));
+	NewMember->data			= data;
+	NewMember->next			= NULL;
+	NewMember->previous 		= NULL;
+	
+	return NewMember;
+
+}
 
 void ExtendSet(void* data, set_s* set){
 	if(set==NULL){
@@ -181,6 +190,28 @@ int RemoveFromSet(list_s** list_t1, group_s** set, set_s** removed_set ){
 		
 	}
 	//return 1;
+}
+
+void SetPostInsert( void* insert_this , set_s** removed_set){
+// set removed_set->list prior to call
+// change atribute->propagated_end[] after this instr
+
+	set_s* set = *removed_set;
+	list_s* list = set->list;
+	
+	list_s* insert = MakeList(insert_this);
+
+	if( list->next !=NULL){
+		list->next->previous   = insert;
+		insert->next 	 = list->next;
+		list->next 				 = insert;
+		insert->previous = list;
+		return;
+	}else{
+		list->next 				 = insert;
+		insert->previous = list;
+		set->end					 = insert;
+	}
 }
 
 void ReinstateVariable(set_s** removed_set){
@@ -361,6 +392,7 @@ void FreeSetArray ( set_s** array, size_t array_size){
 
 }
 
+
 void DeleteGroup(group_s** group){
 (*group)->list = (*group)->first;
 	while((*group)->list!=NULL){
@@ -380,7 +412,7 @@ void CopyGroupSet(set_s* s1, set_s* s2){
 
 int CountGroupSet(set_s* set){
 	list_s* l1 = set->first;
-	int count=0;
+	int count=1;
 	while(l1!=NULL){
 		count++;
 		l1=l1->next;
