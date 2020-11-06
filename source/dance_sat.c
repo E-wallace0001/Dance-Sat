@@ -10,6 +10,8 @@
 #include "headers/h_table.h"
 #include "headers/graph.h"
 
+int learn_count =0;
+
 typedef struct lut{
 
 	void* first;
@@ -100,6 +102,73 @@ void Find_Partial_Bijection(group_s* end, formula_atribute* problem, hash_t* h_t
 }
 
 // this finds where a previous literal was remvoed
+void LearnClause(formula_atribute* problem){
+
+	list_s* literal;
+	GS_mem* mem;
+	list_s* node ;
+	
+	int count=0;
+
+	bool* tried=NULL;
+	tried = calloc(nr_variables+1, sizeof(bool));
+
+	bool match;
+	problem->removed_set->list = problem->removed_set->end;	
+	mem 								= (GS_mem*)problem->removed_set->list->data;
+	literal 							= (list_s*)mem->list;
+	group_s* group 				= (group_s*)mem->group;	
+	hash_t* h_table 				= problem->h_table;
+	
+	int size_new_clause =0;
+	
+	bool save_ret =0 ;
+	
+	list_s* saved;
+	
+	while(1 ){
+		count++;
+		if(  check_table( (int64_t)group, h_table) ){
+		
+
+			
+			if (  problem->propagated[ abs( *(int*) literal->data) ] == 0 && problem->known [ abs(*(int*) literal->data)  ] == 0 && tried[abs(*(int*) literal->data)]==0){
+				//this is the clause that needs reguessing
+			printf(" %i %i ", abs(*(int*) literal->data), problem->assignment[ abs(*(int*) literal->data) ] );
+				size_new_clause++;
+				tried[abs(*(int*) literal->data)]=1;
+			}
+			
+			if ( problem->propagated[ abs( *(int*) literal->data) ] == 1  && tried[abs(*(int*) literal->data)]==0){
+					// if this is propagated, continue on till the last  non- propagated variable
+				/////printf(" this is propagated from %p \n", problem->prop_cause[abs( *(int*)literal->data )] );
+				//table_add( (int64_t)problem->prop_cause[abs( *(int*)literal->data )], h_table);
+				//tried[abs(*(int*) literal->data)]=1;
+				
+			}
+				
+		}
+	
+		if( problem->removed_set->list->previous == NULL){
+			printf("\n");
+			printf(" no previous %i \n", size_new_clause);
+			if(size_new_clause <5)
+			halt();
+			problem->removed_set->list = saved;
+			free( tried );	
+			return;
+			exit(0);
+		}
+		
+		problem->removed_set->list = problem->removed_set->list->previous;
+		mem 								= (GS_mem*)problem->removed_set->list->data;
+		group 							= (group_s*)mem->group;	
+		literal 							= (list_s*)mem->list;
+		
+	}
+}
+
+// this finds where a previous literal was remvoed
 void Find_Bijection(formula_atribute* problem){
 
 	list_s* literal;
@@ -130,8 +199,8 @@ void Find_Bijection(formula_atribute* problem){
 		
 			if(problem->propagated[ abs(*(int*) literal->data) ]  == 0 && tried[abs(*(int*) literal->data)]==0 && problem->known[ abs(*(int*) literal->data) ]  == 0 ){
 				//printf(" %i %i %i \n", abs(*(int*) literal->data),problem->assigned[ abs(*(int*) literal->data) ],problem->assignment[ abs(*(int*) literal->data) ] );
-				size_new_clause++;
-				tried[abs(*(int*) literal->data)]=1;
+				//size_new_clause++;
+				//tried[abs(*(int*) literal->data)]=1;
 			}
 				
 			if ( problem->assignment[ abs(*(int*) literal->data) ] == 1 && problem->propagated[ abs(*(int*) literal->data) ]  == 0  && tried[abs(*(int*) literal->data)]==0 ){
@@ -146,6 +215,7 @@ void Find_Bijection(formula_atribute* problem){
 				//this is the clause that needs reguessing
 				free( tried );	
 				return;
+				
 				saved = problem->removed_set->list;
 				save_ret = true;
 				tried[abs(*(int*) literal->data)]=1;
@@ -163,8 +233,11 @@ void Find_Bijection(formula_atribute* problem){
 	
 		if( problem->removed_set->list->previous == NULL){
 			printf(" no previous %i \n", size_new_clause);
+			//exit(0);
 			problem->removed_set->list = saved;
-			exit(0);
+			free( tried );	
+			return;
+			
 		}
 		
 		problem->removed_set->list = problem->removed_set->list->previous;
@@ -372,7 +445,7 @@ int main(int argc, char* argv[]){
 	unsigned int limit = 2;
 	set_s* var_list	 = MakeSet();
 	set_s* sorted		 = MakeSet();
-
+	set_s* pre = MakeSet();
 	list_s* loop;
 	int* n1; 
 	unsigned int var;
@@ -381,11 +454,15 @@ int main(int argc, char* argv[]){
 	problem->pre_set->list = problem->pre_set->first;
 	loop = problem->pre_set->first;
 	
+	pre = problem->pre_set;
+	loop= pre->first;
+	
 	// organizes the variables that are related to each other n levels deep
 	for( unsigned int var =1 ; var<= total_lit; var++){
+	//while(loop){
 		graph( abs(var), var_list, graphed, layer, limit, problem);
 	}
-	
+//var_list = pre;
 	// this memorizes the position of the variable for backjumping	
 	var_list->list 	= var_list->first;
 	list_s* add_temp 	= var_list->list;
@@ -433,6 +510,8 @@ int main(int argc, char* argv[]){
 						
 					}else{
 						table_add( (int64_t)group, problem->h_table);
+						Find_Partial_Bijection( problem->first_removed[ abs( variable ) ] , problem,  problem->h_table);
+						
 					}
 					
 					m1		 = (GS_mem*) problem->removed_set->end->data;
@@ -484,6 +563,7 @@ int main(int argc, char* argv[]){
 						problem->assigned[ abs( variable ) ]		= 1;
 						continue;
 					}else{
+					
 						problem->removed_set->list = problem->removed_set->end;
 						mem 								= (GS_mem*)problem->removed_set->end->data;
 						group 							= (group_s*)mem->group;	
@@ -497,11 +577,14 @@ int main(int argc, char* argv[]){
 						
 						// search for any connection.
 						
-						//create clause
 						
+						//create clause
+						LearnClause(problem);
+						learn_count++;
 						//find a previous remove
 						Find_Bijection(problem);
 
+						//halt();
 						
 
 						//gets reset variable from find_bijection
@@ -576,7 +659,7 @@ int main(int argc, char* argv[]){
 	free( problem->assignment);
 	free( problem->assigned);
 	free(problem);
-	printf(" finished \n");
+	printf(" finished %i \n",learn_count);
 	return 0;
 
 
