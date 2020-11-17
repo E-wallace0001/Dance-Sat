@@ -22,6 +22,7 @@ typedef  set_s group_s;
 typedef struct GS_mem{
 	group_s* group;
 	list_s* list;
+	int clause_num;
 } GS_mem;
 
 
@@ -60,6 +61,8 @@ void CopyGroupSet(set_s*, set_s*);
 int CountGroupSet(set_s*);
 
 void SetPostInsert( void*  , set_s** );
+
+int RemoveFromSetInsertTo(list_s** , group_s** , set_s**  );
 
 
 #endif

@@ -105,7 +105,7 @@ void read_cnf_list(char* argv,formula_atribute* problem){
 	problem->assigned				= calloc(nr_variables, sizeof(bool));
 	problem->assignment			= calloc(nr_variables, sizeof(bool));
 	problem->propagated			= calloc(nr_variables, sizeof(bool));
-	variable_position				= MakeSetArray(nr_variables); 
+	variable_position				= MakeSetArray(nr_variables+1); 
 	problem->variable_position	= variable_position;
 	assert(variable_position  != NULL);
 	
@@ -132,7 +132,6 @@ void read_cnf_list(char* argv,formula_atribute* problem){
 
 		//at the end of each line
 		if (literal == 0){
-			
 			s1 = (set_s*)formula->end->data;
 			
 			//this is where the number of clauseses is stored
@@ -157,11 +156,13 @@ void read_cnf_list(char* argv,formula_atribute* problem){
 					*var_this = -variable[abs(tmp[unload])][0] ;
 					ExtendSet( var_this , s1);
 				}
+				
 				group_set			= malloc(sizeof(*group_set));
 				
 				group_set->list	= s1->end;
 				
 				group_set->group 	= s1;
+				group_set->clause_num = cl;
 				
 				ExtendSet( group_set, variable_position[ abs(variable[abs(tmp[unload])][0] )] ) ; 
 				

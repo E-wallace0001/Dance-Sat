@@ -23,6 +23,8 @@ typedef struct formula_atribute{
 	void** init_neg;
 	void** first_removed;
 	
+	set_s* to_prop;
+	
 	struct hash_t* h_table;
 	
 }formula_atribute;

@@ -5,8 +5,8 @@
 #include <stdint.h>
 int main(){
 
-	int z, a ,b;
-	int  prime =7	;
+	uint64_t z, a ,b;
+	uint64_t prime =982451653	;
 	bool found=0;
 	//x=5;
 	

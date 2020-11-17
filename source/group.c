@@ -77,11 +77,11 @@ int ReduceSet(list_s* list_t, set_s** set){
 			return 1;
 		}else{
 		
-			//(*set)->first				= NULL;
-			//(*set)->end					= NULL;
-			//(*set)->list= NULL;
+			(*set)->first				= NULL;
+			(*set)->end					= NULL;
+			(*set)->list= NULL;
 			
-			//free(list_t);
+			free(list_t);
 			return 2;
 		}
 		
@@ -189,6 +189,75 @@ int RemoveFromSet(list_s** list_t1, group_s** set, set_s** removed_set ){
 		}
 		
 	}
+	return 0;
+}
+
+int RemoveFromSetInsertTo(list_s** list_t1, group_s** set, set_s** removed_set ){
+	list_s* list_t = *list_t1;
+	if( list_t==NULL) return -1;
+	
+	GS_mem* save= malloc( sizeof(*save));
+	
+	//printf(" removed %i \n", *(int*) (*list_t1)->data);
+	if(list_t->previous!=NULL){
+		if(list_t->next!=NULL){
+		
+			list_t->previous->next	= list_t->next;
+			list_t->next->previous	= list_t->previous;
+			(*set)->list= list_t->previous;
+			
+			save->group = *set;
+			save->list  = *list_t1;
+			
+			//ExtendSet( save, *removed_set);
+			SetPostInsert( save, removed_set);
+			*list_t1 = (*set)->list;
+		}else{
+			list_t->previous->next	= NULL;
+			(*set)->end					= (*set)->end->previous;
+			(*set)->list				= list_t->previous;
+			save->group = *set;
+			save->list  = *list_t1;
+			
+			//ExtendSet( save, *removed_set);
+			SetPostInsert( save, removed_set);
+			
+			*list_t1 = (*set)->list;
+			
+		}
+	}else{
+		if(list_t->next!=NULL){
+			save->group = *set;
+			save->list  = *list_t1;
+			list_t->next->previous	= NULL;
+			(*set)->first				= list_t->next;
+			(*set)->list 				=(*set)->first;
+			//(*set)->list= list_t->next;
+			
+			
+			//ExtendSet( save, *removed_set);
+			SetPostInsert( save, removed_set);
+			*list_t1 = (*set)->list;
+			return 1;
+		}else{
+			
+			save->group = *set;
+			save->list  = *list_t1;
+			
+			
+			(*set)->first				= NULL;
+			(*set)->end					= NULL;
+			(*set)->list 				= NULL;
+			
+			
+			//ExtendSet( save, *removed_set);
+			//SetPostInsert( save, removed_set);
+			
+			*list_t1 = NULL;
+			return 2;
+		}
+		
+	}
 	//return 1;
 }
 
@@ -202,17 +271,20 @@ void SetPostInsert( void* insert_this , set_s** removed_set){
 	list_s* insert = MakeList(insert_this);
 
 	if( list->next !=NULL){
-		list->next->previous   = insert;
-		insert->next 	 = list->next;
-		list->next 				 = insert;
-		insert->previous = list;
+		list->next->previous   	= insert;
+		insert->next 				= list->next;
+		list->next 					= insert;
+		insert->previous 			= list;
+		*removed_set 				= (void*)insert;
 		return;
 	}else{
-		list->next 				 = insert;
-		insert->previous = list;
-		set->end					 = insert;
+		list->next 					= insert;
+		insert->previous 			= list;
+		set->end						= insert;
+		*removed_set 				= (void*)insert;
 	}
 }
+
 
 void ReinstateVariable(set_s** removed_set){
 	set_s*  set_d		= *removed_set;
