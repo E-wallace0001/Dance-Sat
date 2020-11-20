@@ -6,12 +6,12 @@
 int main(){
 
 	uint64_t z, a ,b;
-	uint64_t prime =982451653	;
+	uint64_t prime = 99838	;
 	bool found=0;
 	//x=5;
 	
 	__CPROVER_assume( a>1 && a < prime && b > 1 && b<prime  );
-	//	__CPROVER_assume( a!=2 && a !=5 && b != 2 && b!=5  );
+		
 //	assert(a!=2);
 //	assert(b!=2_
 	//__CPROVER_assume( a!=prime );
@@ -19,6 +19,7 @@ int main(){
 	z = a * b;
 	//bool found;
 	found = ( z==prime);
+	//__CPROVER_assume( found!=prime  );
 	assert ( !found );
 
 	return 0;

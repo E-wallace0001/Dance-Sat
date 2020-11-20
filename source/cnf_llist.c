@@ -85,7 +85,6 @@ void read_cnf_list(char* argv,formula_atribute* problem){
 	
 	
 	// needs to be the size of largest literal as most software skips numbers and takes the largest literal as the literal count - waste of mem!
-	
 	variable = calloc(nr_variables+1, sizeof(int*));
 	
 	for( int i =0; i <= nr_variables; i++){
@@ -97,6 +96,22 @@ void read_cnf_list(char* argv,formula_atribute* problem){
 		if( variable[i]==NULL)
 			exit(0);
 	}
+	
+	int** var_problem;
+	var_problem = calloc(nr_clauses+1, sizeof(int*));
+	
+	for( int i =0; i <= nr_clauses+1; i++){
+
+		var_problem[i] = calloc(100,sizeof(*var_problem[i]));
+		if( var_problem[i]==NULL)
+			exit(0);
+		for(int k =0; k<=100; k++){
+			var_problem[i][k]=0;
+		}
+				
+
+	}
+	
 	variable[0][0]=0;
 	
 	total_lit						= count_variables(argv)+1;
@@ -146,12 +161,17 @@ void read_cnf_list(char* argv,formula_atribute* problem){
 				}
 				
 				if(tmp[unload]>0){
+				
+					var_problem[cl][unload] = variable[abs(tmp[unload])][0];
+					
 					var_this =  malloc( sizeof(*var_this)) ;
 					*var_this = variable[abs(tmp[unload])][0] ;
 					ExtendSet( var_this , s1);
 				}
 
 				if(tmp[unload]<0){
+				
+					var_problem[cl][unload] = -variable[abs(tmp[unload])][0];
 					var_this =  malloc( sizeof(int)) ;
 					*var_this = -variable[abs(tmp[unload])][0] ;
 					ExtendSet( var_this , s1);

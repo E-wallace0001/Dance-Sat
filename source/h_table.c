@@ -42,11 +42,18 @@ void bucket_end_del( hasht_bucket** bucket_list){
 	if (*bucket_list==NULL) exit(0);
 	
 	hasht_bucket* list = (*bucket_list)->first->end;
-
-	list->first->end= list->previous;
-	list->previous->next=NULL;
-	
-	free(list);
+	if(list->previous!=NULL){
+		list->first->end= list->previous;
+		list->previous->next=NULL;
+		free(list);
+	}else{
+		list->first = list;
+		list->end = list;
+		list->clause=0;
+		list->next= NULL;
+		list->previous = NULL;
+		//list=NULL;
+	}
 
 }
 
@@ -141,9 +148,10 @@ void hash_t_empty( hash_t** ht){
 	hasht_bucket** table		= (*ht)->table;
 	
 	for(int64_t i = 0; i<=size; i++){
-		while(table[i]->first->end->previous != NULL){
+		while(table[i]->first->clause != 0){
 			bucket_end_del( &table[i] );
 		}
+		
 		//free(table[i]);
 	}
 }

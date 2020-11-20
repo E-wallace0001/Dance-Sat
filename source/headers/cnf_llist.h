@@ -26,6 +26,7 @@ typedef struct formula_atribute{
 	set_s* to_prop;
 	
 	struct hash_t* h_table;
+	struct hash_t* h_table2;
 	
 }formula_atribute;
 
