@@ -2,6 +2,7 @@
 #ifndef GROUP_H
 #define GROUP_H
 
+
 typedef struct set_s{
 
 	struct list_s* list;
@@ -29,6 +30,8 @@ typedef struct GS_mem{
 set_s* MakeSet();
 
 void ExtendSet(void*, set_s*);
+void InsertFirstSet(void*, set_s*);
+
 void InsertNumToSet( int, set_s*);
 
 int ReduceSet(list_s*, set_s**);
@@ -60,9 +63,11 @@ void CopyGroupSet(set_s*, set_s*);
 
 int CountGroupSet(set_s*);
 
-void SetPostInsert( void*  , set_s** );
+void SetPostInsert( void*  , list_s** , set_s**);
 
-int RemoveFromSetInsertTo(list_s** , group_s** , set_s**  );
+int RemoveFromSetInsertTo(list_s** , set_s** , list_s** , set_s** );
+
+void MoveSet( list_s* , list_s*, set_s* );
 
 
 #endif

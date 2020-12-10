@@ -1,0 +1,327 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+ 66.71      0.74     0.74  4010032     0.00     0.00  check_table
+ 10.82      0.86     0.12      185     0.65     0.65  hash_t_empty
+  8.11      0.95     0.09      274     0.33     0.35  propagate
+  4.51      1.00     0.05       73     0.69    10.23  LearnClause
+  1.80      1.02     0.02   111348     0.00     0.00  reset_variable
+  1.80      1.04     0.02     6512     0.00     0.00  graph
+  1.80      1.06     0.02                             main
+  0.90      1.07     0.01  4028777     0.00     0.00  hashval
+  0.90      1.08     0.01   516320     0.00     0.00  ExtendSet
+  0.90      1.09     0.01   203083     0.00     0.00  ReinstateVariable
+  0.90      1.10     0.01        2     5.00     5.00  export_cnf
+  0.90      1.11     0.01        1    10.01    34.37  read_cnf_list
+  0.00      1.11     0.00   257149     0.00     0.00  RemoveFromSet
+  0.00      1.11     0.00   227734     0.00     0.00  hasht_indx_create
+  0.00      1.11     0.00   203083     0.00     0.00  GroupReduceSet
+  0.00      1.11     0.00    41739     0.00     0.00  MakeSet
+  0.00      1.11     0.00    35215     0.00     0.00  ExtendGroup
+  0.00      1.11     0.00    18745     0.00     0.00  table_add
+  0.00      1.11     0.00    11768     0.00     0.00  bucket_end_del
+  0.00      1.11     0.00     6511     0.00     0.00  InsertNumToSet
+  0.00      1.11     0.00      844     0.00     0.00  hasht_add
+  0.00      1.11     0.00      129     0.00     0.15  Find_Partial_Bijection
+  0.00      1.11     0.00       73     0.00     0.21  Find_Bijection
+  0.00      1.11     0.00        4     0.00     0.00  hasht_create
+  0.00      1.11     0.00        1     0.00     0.00  MakeGroup
+  0.00      1.11     0.00        1     0.00     0.00  MakeSetArray
+  0.00      1.11     0.00        1     0.00    19.62  count_variables
+  0.00      1.11     0.00        1     0.00     0.00  hash_t_destroy
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 0.90% of 1.11 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]    100.0    0.02    1.09                 main [1]
+                0.05    0.70      73/73          LearnClause [3]
+                0.12    0.00     185/185         hash_t_empty [4]
+                0.09    0.00     274/274         propagate [5]
+                0.01    0.02       1/1           read_cnf_list [6]
+                0.02    0.01  111348/111348      reset_variable [7]
+                0.02    0.00    6512/6512        graph [8]
+                0.00    0.02     129/129         Find_Partial_Bijection [10]
+                0.00    0.02      73/73          Find_Bijection [11]
+                0.01    0.00       2/2           export_cnf [14]
+                0.00    0.00   91735/203083      ReinstateVariable [13]
+                0.00    0.00     516/18745       table_add [19]
+                0.00    0.00       1/1           MakeGroup [20]
+                0.00    0.00       9/41739       MakeSet [23]
+                0.00    0.00       3/4           hasht_create [26]
+-----------------------------------------------
+                0.01    0.00   80463/4010032     Find_Bijection [11]
+                0.02    0.00  102567/4010032     Find_Partial_Bijection [10]
+                0.02    0.00  104756/4010032     count_variables [9]
+                0.69    0.01 3722246/4010032     LearnClause [3]
+[2]     67.6    0.74    0.01 4010032         check_table [2]
+                0.01    0.00 4010032/4028777     hashval [12]
+-----------------------------------------------
+                0.05    0.70      73/73          main [1]
+[3]     67.2    0.05    0.70      73         LearnClause [3]
+                0.69    0.01 3722246/4010032     check_table [2]
+                0.00    0.00    7926/516320      ExtendSet [15]
+                0.00    0.00      73/35215       ExtendGroup [17]
+-----------------------------------------------
+                0.12    0.00     185/185         main [1]
+[4]     10.8    0.12    0.00     185         hash_t_empty [4]
+                0.00    0.00   11768/11768       bucket_end_del [24]
+-----------------------------------------------
+                               24452             propagate [5]
+                0.09    0.00     274/274         main [1]
+[5]      8.6    0.09    0.00     274+24452   propagate [5]
+                0.00    0.00  257149/257149      RemoveFromSet [16]
+                               24452             propagate [5]
+-----------------------------------------------
+                0.01    0.02       1/1           main [1]
+[6]      3.1    0.01    0.02       1         read_cnf_list [6]
+                0.00    0.02       1/1           count_variables [9]
+                0.00    0.00  209518/516320      ExtendSet [15]
+                0.00    0.00   35142/35215       ExtendGroup [17]
+                0.00    0.00       1/1           MakeSetArray [27]
+-----------------------------------------------
+                0.02    0.01  111348/111348      main [1]
+[7]      2.3    0.02    0.01  111348         reset_variable [7]
+                0.01    0.00  111348/203083      ReinstateVariable [13]
+-----------------------------------------------
+                                6511             graph [8]
+                0.02    0.00    6512/6512        main [1]
+[8]      1.8    0.02    0.00    6512+6511    graph [8]
+                0.00    0.00    6511/6511        InsertNumToSet [18]
+                                6511             graph [8]
+-----------------------------------------------
+                0.00    0.02       1/1           read_cnf_list [6]
+[9]      1.8    0.00    0.02       1         count_variables [9]
+                0.02    0.00  104756/4010032     check_table [2]
+                0.00    0.00    6511/18745       table_add [19]
+                0.00    0.00       1/4           hasht_create [26]
+                0.00    0.00       1/1           hash_t_destroy [28]
+-----------------------------------------------
+                0.00    0.02     129/129         main [1]
+[10]     1.7    0.00    0.02     129         Find_Partial_Bijection [10]
+                0.02    0.00  102567/4010032     check_table [2]
+                0.00    0.00    7869/18745       table_add [19]
+-----------------------------------------------
+                0.00    0.02      73/73          main [1]
+[11]     1.4    0.00    0.02      73         Find_Bijection [11]
+                0.01    0.00   80463/4010032     check_table [2]
+                0.00    0.00    3849/18745       table_add [19]
+-----------------------------------------------
+                0.00    0.00   18745/4028777     table_add [19]
+                0.01    0.00 4010032/4028777     check_table [2]
+[12]     0.9    0.01    0.00 4028777         hashval [12]
+-----------------------------------------------
+                0.00    0.00   91735/203083      main [1]
+                0.01    0.00  111348/203083      reset_variable [7]
+[13]     0.9    0.01    0.00  203083         ReinstateVariable [13]
+                0.00    0.00  203083/203083      GroupReduceSet [22]
+-----------------------------------------------
+                0.01    0.00       2/2           main [1]
+[14]     0.9    0.01    0.00       2         export_cnf [14]
+-----------------------------------------------
+                0.00    0.00       1/516320      MakeGroup [20]
+                0.00    0.00    6511/516320      InsertNumToSet [18]
+                0.00    0.00    7926/516320      LearnClause [3]
+                0.00    0.00   35215/516320      ExtendGroup [17]
+                0.00    0.00  209518/516320      read_cnf_list [6]
+                0.00    0.00  257149/516320      RemoveFromSet [16]
+[15]     0.9    0.01    0.00  516320         ExtendSet [15]
+-----------------------------------------------
+                0.00    0.00  257149/257149      propagate [5]
+[16]     0.4    0.00    0.00  257149         RemoveFromSet [16]
+                0.00    0.00  257149/516320      ExtendSet [15]
+-----------------------------------------------
+                0.00    0.00      73/35215       LearnClause [3]
+                0.00    0.00   35142/35215       read_cnf_list [6]
+[17]     0.1    0.00    0.00   35215         ExtendGroup [17]
+                0.00    0.00   35215/516320      ExtendSet [15]
+                0.00    0.00   35215/41739       MakeSet [23]
+-----------------------------------------------
+                0.00    0.00    6511/6511        graph [8]
+[18]     0.0    0.00    0.00    6511         InsertNumToSet [18]
+                0.00    0.00    6511/516320      ExtendSet [15]
+-----------------------------------------------
+                0.00    0.00     516/18745       main [1]
+                0.00    0.00    3849/18745       Find_Bijection [11]
+                0.00    0.00    6511/18745       count_variables [9]
+                0.00    0.00    7869/18745       Find_Partial_Bijection [10]
+[19]     0.0    0.00    0.00   18745         table_add [19]
+                0.00    0.00   18745/4028777     hashval [12]
+                0.00    0.00     844/844         hasht_add [25]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[20]     0.0    0.00    0.00       1         MakeGroup [20]
+                0.00    0.00       1/516320      ExtendSet [15]
+                0.00    0.00       2/41739       MakeSet [23]
+-----------------------------------------------
+                0.00    0.00     844/227734      hasht_add [25]
+                0.00    0.00  226890/227734      hasht_create [26]
+[21]     0.0    0.00    0.00  227734         hasht_indx_create [21]
+-----------------------------------------------
+                0.00    0.00  203083/203083      ReinstateVariable [13]
+[22]     0.0    0.00    0.00  203083         GroupReduceSet [22]
+-----------------------------------------------
+                0.00    0.00       2/41739       MakeGroup [20]
+                0.00    0.00       9/41739       main [1]
+                0.00    0.00    6513/41739       MakeSetArray [27]
+                0.00    0.00   35215/41739       ExtendGroup [17]
+[23]     0.0    0.00    0.00   41739         MakeSet [23]
+-----------------------------------------------
+                0.00    0.00   11768/11768       hash_t_empty [4]
+[24]     0.0    0.00    0.00   11768         bucket_end_del [24]
+-----------------------------------------------
+                0.00    0.00     844/844         table_add [19]
+[25]     0.0    0.00    0.00     844         hasht_add [25]
+                0.00    0.00     844/227734      hasht_indx_create [21]
+-----------------------------------------------
+                0.00    0.00       1/4           count_variables [9]
+                0.00    0.00       3/4           main [1]
+[26]     0.0    0.00    0.00       4         hasht_create [26]
+                0.00    0.00  226890/227734      hasht_indx_create [21]
+-----------------------------------------------
+                0.00    0.00       1/1           read_cnf_list [6]
+[27]     0.0    0.00    0.00       1         MakeSetArray [27]
+                0.00    0.00    6513/41739       MakeSet [23]
+-----------------------------------------------
+                0.00    0.00       1/1           count_variables [9]
+[28]     0.0    0.00    0.00       1         hash_t_destroy [28]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [17] ExtendGroup            [13] ReinstateVariable      [26] hasht_create
+  [15] ExtendSet              [16] RemoveFromSet          [21] hasht_indx_create
+  [11] Find_Bijection         [24] bucket_end_del         [12] hashval
+  [10] Find_Partial_Bijection  [2] check_table             [1] main
+  [22] GroupReduceSet          [9] count_variables         [5] propagate
+  [18] InsertNumToSet         [14] export_cnf              [6] read_cnf_list
+   [3] LearnClause             [8] graph                   [7] reset_variable
+  [20] MakeGroup              [28] hash_t_destroy         [19] table_add
+  [23] MakeSet                 [4] hash_t_empty
+  [27] MakeSetArray           [25] hasht_add

@@ -60,6 +60,7 @@ void bucket_end_del( hasht_bucket** bucket_list){
 hasht_bucket* hasht_add(int64_t val, hasht_bucket* list){
 
 
+
 	hasht_bucket* indx	= hasht_indx_create();
 	list->end->next 		= indx;
 	indx->previous			= list->end;
@@ -70,9 +71,12 @@ hasht_bucket* hasht_add(int64_t val, hasht_bucket* list){
 }
 
 
-int64_t hashval( int64_t val, hash_t* ht){
+uint64_t hashval( uint64_t val, hash_t* ht){
 	return val % ht->size;
 }
+
+
+
 
 bool check_table(int64_t val, hash_t* ht){
 
@@ -106,6 +110,9 @@ bool check_table(int64_t val, hash_t* ht){
 }
 
 void table_add( int64_t val, hash_t* ht){
+
+		if( &val == NULL)
+			return;
 
 	hasht_bucket** table = ht->table;
 

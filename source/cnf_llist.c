@@ -89,7 +89,7 @@ void read_cnf_list(char* argv,formula_atribute* problem){
 	
 	for( int i =0; i <= nr_variables; i++){
 	
-		variable[i] = calloc(2,sizeof(*variable[i]));
+		variable[i] = calloc(2,sizeof(int*));
 		variable[i][0]=0;
 		variable[i][1]=0;
 		
@@ -100,9 +100,9 @@ void read_cnf_list(char* argv,formula_atribute* problem){
 	int** var_problem;
 	var_problem = calloc(nr_clauses+1, sizeof(int*));
 	
-	for( int i =0; i <= nr_clauses+1; i++){
+	for( int i =0; i <= nr_clauses; i++){
 
-		var_problem[i] = calloc(100,sizeof(*var_problem[i]));
+		var_problem[i] = calloc(100,sizeof(int*));
 		if( var_problem[i]==NULL)
 			exit(0);
 		for(int k =0; k<=100; k++){
@@ -117,13 +117,12 @@ void read_cnf_list(char* argv,formula_atribute* problem){
 	total_lit						= count_variables(argv)+1;
 	printf(" total_lit %lu \n", total_lit);
 	
-	problem->assigned				= calloc(nr_variables, sizeof(bool));
-	problem->assignment			= calloc(nr_variables, sizeof(bool));
-	problem->propagated			= calloc(nr_variables, sizeof(bool));
-	variable_position				= MakeSetArray(nr_variables+1); 
+	problem->assigned				= calloc(nr_variables+1, sizeof(bool));
+	problem->assignment			= calloc(nr_variables+1, sizeof(bool));
+	problem->propagated			= calloc(nr_variables+1, sizeof(bool));
+	variable_position				= MakeSetArray(total_lit); 
 	problem->variable_position	= variable_position;
 	assert(variable_position  != NULL);
-	
 	int tmp[400]={0};
 	int b=0;
 	int cl=1;
@@ -178,9 +177,7 @@ void read_cnf_list(char* argv,formula_atribute* problem){
 				}
 				
 				group_set			= malloc(sizeof(*group_set));
-				
 				group_set->list	= s1->end;
-				
 				group_set->group 	= s1;
 				group_set->clause_num = cl;
 				

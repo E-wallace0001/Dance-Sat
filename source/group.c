@@ -1,7 +1,19 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "headers/group.h"
+
 #include <assert.h>
+#include <stdbool.h>
+#include "headers/cnf_llist.h"
+#include "headers/group.h"
+
+
+void haltt(){
+	while(1){
+	char input;
+	scanf("%c", &input);
+	 if(getchar()!=0){ break;}
+	}
+}
 
 
 set_s* MakeSet(){
@@ -24,7 +36,7 @@ list_s* MakeList(void* data){
 
 void ExtendSet(void* data, set_s* set){
 	if(set==NULL){
-		//printf(" ExtendSet empty \n");
+		printf(" ExtendSet empty \n");
 		exit(0);
 	}
 	list_s* NewMember			= malloc(sizeof(*NewMember));
@@ -41,7 +53,26 @@ void ExtendSet(void* data, set_s* set){
 		NewMember->previous	= set->end;
 		set->end					= NewMember;
 	}
-	
+}
+void InsertFirstSet(void* data, set_s* set){
+	if(set==NULL){
+		printf(" ExtendSet empty \n");
+		exit(0);
+	}
+	list_s* NewMember			= malloc(sizeof(*NewMember));
+	NewMember->data			= data;
+	NewMember->next			= NULL;
+	NewMember->previous 		= NULL;
+
+	if( set->list == NULL){
+		set->list				= NewMember;
+		set->first				= NewMember;
+		set->end					= NewMember;
+	}else{
+		set->first->next->previous	= NewMember;
+		NewMember->next				= set->first;
+		set->first						= NewMember;
+	}
 }
 void InsertNumToSet( int num, set_s* set){
 
@@ -102,7 +133,7 @@ int GroupReduceSet(list_s* list_t, set_s** set){
 		}else{
 			list_t->previous->next	= NULL;
 			(*set)->end					= (*set)->end->previous;
-			(*set)->list= list_t->previous;
+			(*set)->list				= list_t->previous;
 			free(list_t);
 			
 		}
@@ -135,56 +166,60 @@ int RemoveFromSet(list_s** list_t1, group_s** set, set_s** removed_set ){
 	
 	//printf(" removed %i \n", *(int*) (*list_t1)->data);
 	if(list_t->previous!=NULL){
+	
 		if(list_t->next!=NULL){
-		
+		//printf("1\n");	
 			list_t->previous->next	= list_t->next;
 			list_t->next->previous	= list_t->previous;
 			(*set)->list= list_t->previous;
 			
 			save->group = *set;
-			save->list  = *list_t1;
+			save->list  = list_t;
 			
 			ExtendSet( save, *removed_set);
-			*list_t1 = (*set)->list;
+			list_t = (*set)->list;
 			
 		}else{
+		//printf("2\n");
 			list_t->previous->next	= NULL;
 			(*set)->end					= (*set)->end->previous;
 			(*set)->list				= list_t->previous;
 			save->group = *set;
-			save->list  = *list_t1;
+			save->list  = list_t;
 			
 			ExtendSet( save, *removed_set);
-			*list_t1 = (*set)->list;
+			list_t = (*set)->list;
 			//printf("end set \n");
 			
 		}
 	}else{
 		if(list_t->next!=NULL){
+		//printf("3\n");
 			list_t->next->previous	= NULL;
 			(*set)->first				= list_t->next;
 			(*set)->list 				=(*set)->first;
 			//(*set)->list= list_t->next;
 			
 			save->group = *set;
-			save->list  = *list_t1;
+			save->list  = list_t;
 			
 			ExtendSet( save, *removed_set);
-			*list_t1 = (*set)->list;
+			list_t = (*set)->list;
 			return 1;
 		}else{
-		
+					
+
 			(*set)->first				= NULL;
 			(*set)->end					= NULL;
 			(*set)->list 				= NULL;
-			
 			save->group = *set;
-			save->list  = *list_t1;
+			save->list  = list_t;
 			
 			ExtendSet( save, *removed_set);
-			*list_t1 = NULL;
 			
-			printf(" empty set\n ");
+			//*list_t1 = NULL;
+			
+			//printf(" empty set\n ");
 			return 2;
 		}
 		
@@ -192,111 +227,165 @@ int RemoveFromSet(list_s** list_t1, group_s** set, set_s** removed_set ){
 	return 0;
 }
 
-int RemoveFromSetInsertTo(list_s** list_t1, group_s** set, set_s** removed_set ){
-	list_s* list_t = *list_t1;
+int RemoveFromSetInsertTo(list_s** list_t1, set_s** set, list_s** removed_set, set_s** rem_set ){
+	list_s* list_t = (*list_t1);
 	if( list_t==NULL) return -1;
+	if (*removed_set == NULL){ 
+		printf(" removed_set = null \n ");
+		return 0;
+	}
 	
+	
+	//printf(" numend \n");
 	GS_mem* save= malloc( sizeof(*save));
-	
-	//printf(" removed %i \n", *(int*) (*list_t1)->data);
-	if(list_t->previous!=NULL){
-		if(list_t->next!=NULL){
+	//printf(" var st %i \n", *(int*)(*set)->data); 
+	if((list_t)->previous!=NULL){
+		if((list_t)->next!=NULL){
+			(list_t)->previous->next	= list_t->next;
+			(list_t)->next->previous	= list_t->previous;
+			(*set)->list= (list_t)->previous;
+			
+			save->group = *set;
+			save->list  = list_t;
 		
-			list_t->previous->next	= list_t->next;
-			list_t->next->previous	= list_t->previous;
-			(*set)->list= list_t->previous;
+			SetPostInsert( save, removed_set, rem_set );	
+//			ExtendSet( save, *removed_set);
+			//*list_t1 = (*set)->list;
 			
-			save->group = *set;
-			save->list  = *list_t1;
-			
-			//ExtendSet( save, *removed_set);
-			SetPostInsert( save, removed_set);
-			*list_t1 = (*set)->list;
 		}else{
-			list_t->previous->next	= NULL;
+
+			(list_t)->previous->next	= NULL;
 			(*set)->end					= (*set)->end->previous;
-			(*set)->list				= list_t->previous;
+			(*set)->list				= (list_t)->previous;
 			save->group = *set;
-			save->list  = *list_t1;
-			
-			//ExtendSet( save, *removed_set);
-			SetPostInsert( save, removed_set);
-			
-			*list_t1 = (*set)->list;
+			save->list  = (list_t);
+			SetPostInsert( save, removed_set, rem_set );	
+			//	*list_t1 = (*set)->list;
 			
 		}
 	}else{
-		if(list_t->next!=NULL){
-			save->group = *set;
-			save->list  = *list_t1;
-			list_t->next->previous	= NULL;
-			(*set)->first				= list_t->next;
+		if((list_t)->next!=NULL){
+			(list_t)->next->previous	= NULL;
+			(*set)->first				= (list_t)->next;
 			(*set)->list 				=(*set)->first;
-			//(*set)->list= list_t->next;
+			//(*set)->list				= (*list_t1)->next;
+			save->group = *set;
+			save->list  = (*list_t1);
+			SetPostInsert( save, removed_set , rem_set);
 			
-			
-			//ExtendSet( save, *removed_set);
-			SetPostInsert( save, removed_set);
-			*list_t1 = (*set)->list;
-			return 1;
+				//haltt();
+			//*list_t1 = (*set)->list;
+			//return 1;
 		}else{
+			//(*set)->first				= NULL;
+			//(*set)->end					= NULL;
+			//(*set)->list 				= NULL;
 			
 			save->group = *set;
-			save->list  = *list_t1;
+			save->list  = list_t;
 			
-			
-			(*set)->first				= NULL;
-			(*set)->end					= NULL;
-			(*set)->list 				= NULL;
-			
-			
-			//ExtendSet( save, *removed_set);
-			//SetPostInsert( save, removed_set);
-			
+			SetPostInsert( save, removed_set, rem_set );
+
+			(*list_t1)->next=NULL;
+			(*list_t1)->previous=NULL;
+
+		
 			*list_t1 = NULL;
+			
+			//printf(" empty set\n ");
 			return 2;
-		}
+		}	
 		
 	}
-	//return 1;
+	return 0;
 }
 
-void SetPostInsert( void* insert_this , set_s** removed_set){
+void SetPostInsert( void* insert_this , list_s** removed_set, set_s** rem_set){
 // set removed_set->list prior to call
 // change atribute->propagated_end[] after this instr
-
-	set_s* set = *removed_set;
-	list_s* list = set->list;
-	
+	list_s* set = *removed_set;
+	//list_s* list = set;
 	list_s* insert = MakeList(insert_this);
+	
+	GS_mem* data 		= (GS_mem*)insert_this;
+	list_s* list		= (list_s*)data->list;
+	//group_s* set 		= (group_s*)data->group;
+	
+	
+		if( (set)->next !=NULL){
+			//if((set) !=NULL)
+			insert->next 								= (*removed_set)->next;
+			insert->previous 							= (*removed_set);
+			insert->next->previous	   				= insert;
 
-	if( list->next !=NULL){
-		list->next->previous   	= insert;
-		insert->next 				= list->next;
-		list->next 					= insert;
-		insert->previous 			= list;
-		*removed_set 				= (void*)insert;
-		return;
-	}else{
-		list->next 					= insert;
-		insert->previous 			= list;
-		set->end						= insert;
-		*removed_set 				= (void*)insert;
-	}
+			(*removed_set) 							= insert;
+		}else{
+			insert->previous 							= (*rem_set)->end;
+			insert->next 								= NULL;
+			(*rem_set)->end->next					= insert;
+			(*rem_set)->end 							= insert;
+			//list->next 									= insert;
+			return;
+			
+		}
+		
+		
 }
 
+void MoveSet( list_s* a, list_s* b, set_s* set){
+if( a==b){
+	printf("equal\n");
+	haltt(0);
+}
+if(b->next == a ||a->previous == b ) 
+	return;
+//if(a->previous ==b || a->next == b ) 
+//	return;
+	//printf(" %p \n", b->next);
+	//a->previous->next = a->next;
+	if(a->next == NULL){
+	exit(0);
+	
+		set->end = a->previous;
+		set->end->next = NULL;
+		
+	}
+	//
+	if( b->next !=NULL){
+		b->next->previous	= a;
+		a->previous->next = a->next;
+		a->next->previous = a->previous;
+		
+		a->previous			= b;
+		a->next				= b->next;
+		
+		b->next				= a;
+		//haltt();
+		//printf("mv %p %p \n",a, a->next);
+		//printf(" null \n");
+		//haltt();
+	}else{
+	exit(0);
+	}
+	
+
+if( a == b  ) {
+	printf("1\n");
+	exit(0);
+}
+
+}
 
 void ReinstateVariable(set_s** removed_set){
+
 	set_s*  set_d		= *removed_set;
 	list_s* list_d 	= set_d->end;
-	GS_mem* data 		= (GS_mem*)list_d->data;
 	
+	GS_mem* data 		= (GS_mem*)list_d->data;
 	list_s* list		= (list_s*)data->list;
 	group_s* set 		= (group_s*)data->group;
 	
 	assert(set);
-
-	group_s* clause = (set);
 
 	(*removed_set)->list= (*removed_set)->end;
 
@@ -313,7 +402,6 @@ void ReinstateVariable(set_s** removed_set){
 	}else{
 		(list)->previous->next = list;
 	}
-	set->list= set->first;
 	
 	free( (*removed_set)->end->data);
 	GroupReduceSet( (*removed_set)->end, removed_set);

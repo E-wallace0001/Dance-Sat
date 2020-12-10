@@ -27,7 +27,7 @@ typedef struct formula_atribute{
 	
 	struct hash_t* h_table;
 	struct hash_t* h_table2;
-	
+	struct hash_t* h_table3;
 }formula_atribute;
 
 int nr_variables, nr_clauses;

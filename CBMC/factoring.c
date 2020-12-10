@@ -6,7 +6,7 @@
 int main(){
 
 	uint64_t z, a ,b;
-	uint64_t prime = 99838	;
+	uint64_t prime = 99839	;
 	bool found=0;
 	//x=5;
 	

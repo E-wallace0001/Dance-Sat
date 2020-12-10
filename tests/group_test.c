@@ -235,19 +235,95 @@ int main(){
 	removed_set->list=removed_set->first;
 	printf( " count set %i \n",CountGroupSet(removed_set) );
 
-
+printf(" set post \n");
 		sum =0;	
 		num = malloc(sizeof(*num));
 		*num = 3;
 		s1->list = s1->first;
-		SetPostInsert( num, &s1);
+		s1->list = s1->list->next;
+		SetPostInsert( num,&s1->list, &s1);
 		s1->list = s1->first;
+		
 		while(s1->list!=NULL){
 			printf(" num %i \n", *(int*)s1->list->data);
 			sum+=*(int*)s1->list->data;
 			s1->list=s1->list->next;
 		}
-	
+		printf(" end num %i \n", *(int*)s1->end->data);
+		s1->list = s1->first;
+		num = malloc(sizeof(*num));
+		*num = 222;
+		s1->list = s1->list->next->next;
+		SetPostInsert( num,&s1->list, &s1);
+		s1->list = s1->first;
+		
+		list_s* saved = NULL;
+		
+		while(s1->list!=NULL){
+			printf(" num %i \n", *(int*)s1->list->data);
+			sum+=*(int*)s1->list->data;
+			
+			saved = s1->list;
+			
+			s1->list=s1->list->next;
+		}
+		printf("\n");
+		
+		
+		s1->list = s1->end;
+		while(s1->list!=NULL){
+			printf(" num %i \n", *(int*)s1->list->data);
+			sum+=*(int*)s1->list->data;
+		
+			s1->list=s1->list->previous;
+		}
+		
+		//printf("s1->first data %i %i \n", *(int*)saved->data,*(int*)s1->first->next->data );
+		printf("s1->sec data %i \n", *(int*)s1->first->next->next->next->data );
+		printf("s1->sec data %i \n", *(int*)s1->first->next->data );
+		MoveSet( s1->end, s1->first, s1);
+		printf("s1->sec data %i \n", *(int*)s1->first->next->next->next->data );
+		printf("s1->sec data %i \n", *(int*)s1->first->next->data );
+		s1->list = s1->first;
+		
+		
+		while(s1->list!=NULL){
+			printf(" few num %i \n", *(int*)s1->list->data);
+			sum+=*(int*)s1->list->data;
+			
+			s1->list=s1->list->next;
+		}
+		printf("\n");
+		
+		
+		s1->list = s1->end;
+		while(s1->list!=NULL){
+			printf(" bck num %i \n", *(int*)s1->list->data);
+			sum+=*(int*)s1->list->data;
+		
+			s1->list=s1->list->previous;
+		}
+		MoveSet( s1->end, s1->first->next, s1);
+		
+		printf("fwd\n");
+		s1->list = s1->first;
+			while(s1->list!=NULL){
+			printf(" fwd num %i \n", *(int*)s1->list->data);
+			sum+=*(int*)s1->list->data;
+			
+			s1->list=s1->list->next;
+		}
+		printf("diff\n");
+		
+		
+				s1->list = s1->end;
+		while(s1->list!=NULL){
+			printf(" bck num %i \n", *(int*)s1->list->data);
+			sum+=*(int*)s1->list->data;
+		
+			s1->list=s1->list->previous;
+		}
+	exit(0);
 	/*
 	ReinstateVariable(&removed_set );
 	
