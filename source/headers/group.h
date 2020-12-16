@@ -8,14 +8,17 @@ typedef struct set_s{
 	struct list_s* list;
 	struct list_s* first;
 	struct list_s* end;
+	int*   var_list;
+	int    var_list_size;
 
 }set_s;
 
 
 typedef struct list_s{
-	void* data;
-	struct list_s* next;
-	struct list_s* previous;
+	void*    data;
+	struct   list_s* next;
+	struct   list_s* previous;
+	struct 	set_s*  group;
 } list_s;
 
 typedef  set_s group_s;

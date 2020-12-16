@@ -88,7 +88,6 @@ int main(){
 	RemoveFromSet(&list, &set, &removed_set );
 	RemoveFromSet(&list, &set, &removed_set );
 	RemoveFromSet(&list, &set, &removed_set );
-//	list = list->next;
 	RemoveFromSet(&list, &set, &removed_set );
 	list = set->end;
 	RemoveFromSet(&list, &set, &removed_set );

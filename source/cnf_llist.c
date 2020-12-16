@@ -131,6 +131,7 @@ void read_cnf_list(char* argv,formula_atribute* problem){
 	int clause;
 	int* var_this;
 	GS_mem* group_set;
+	//int* cl;
 	while (1){
 		if (fscanf(fp, "%d", &literal) != 1){
 			printf("error: expected literal\n");
@@ -147,7 +148,8 @@ void read_cnf_list(char* argv,formula_atribute* problem){
 		//at the end of each line
 		if (literal == 0){
 			s1 = (set_s*)formula->end->data;
-			
+			s1->var_list       = malloc( b * sizeof(  int) );
+			s1->var_list_size = b;
 			//this is where the number of clauseses is stored
 			for (int unload=0;unload<b;unload++){
 				//convert variable to progessive number
@@ -175,10 +177,11 @@ void read_cnf_list(char* argv,formula_atribute* problem){
 					*var_this = -variable[abs(tmp[unload])][0] ;
 					ExtendSet( var_this , s1);
 				}
-				
-				group_set			= malloc(sizeof(*group_set));
-				group_set->list	= s1->end;
-				group_set->group 	= s1;
+				s1->var_list[unload] = *var_this;
+				 
+				group_set			 = malloc(sizeof(*group_set));
+				group_set->list	 = s1->end;
+				group_set->group 	 = s1;
 				group_set->clause_num = cl;
 				
 				ExtendSet( group_set, variable_position[ abs(variable[abs(tmp[unload])][0] )] ) ; 
@@ -197,9 +200,11 @@ void read_cnf_list(char* argv,formula_atribute* problem){
 					ExtendSet( var_this, problem->pre_set);
 				}
 			}
+			
+			;
 			b=0;
 		}
-		//break;
+		
 		ExtendGroup( formula );
 		cl++;
 		f_clause_count++;

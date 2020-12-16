@@ -333,16 +333,13 @@ void SetPostInsert( void* insert_this , list_s** removed_set, set_s** rem_set){
 }
 
 void MoveSet( list_s* a, list_s* b, set_s* set){
-if( a==b){
-	printf("equal\n");
-	haltt(0);
-}
-if(b->next == a ||a->previous == b ) 
-	return;
-//if(a->previous ==b || a->next == b ) 
-//	return;
-	//printf(" %p \n", b->next);
-	//a->previous->next = a->next;
+	if( a==b){
+		printf("equal\n");
+		haltt(0);
+	}
+	if(b->next == a ||a->previous == b ) 
+		return;
+
 	if(a->next == NULL){
 	exit(0);
 	
@@ -360,19 +357,15 @@ if(b->next == a ||a->previous == b )
 		a->next				= b->next;
 		
 		b->next				= a;
-		//haltt();
-		//printf("mv %p %p \n",a, a->next);
-		//printf(" null \n");
-		//haltt();
 	}else{
 	exit(0);
 	}
 	
 
-if( a == b  ) {
-	printf("1\n");
-	exit(0);
-}
+	if( a == b  ) {
+		printf("1\n");
+		exit(0);
+	}
 
 }
 

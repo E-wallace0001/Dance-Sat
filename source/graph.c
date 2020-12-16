@@ -4,8 +4,7 @@
 #include <stdbool.h>
 #include "headers/cnf_llist.h"
 #include "headers/group.h"
-
-
+#include "headers/dsat.h"
 
 void graph( int root_var, set_s* list,unsigned int* graphed,unsigned int layer, unsigned int limit, formula_atribute* atribute){
 	
@@ -34,13 +33,8 @@ void graph( int root_var, set_s* list,unsigned int* graphed,unsigned int layer, 
 			variable = abs( *(int*)literal->data);
 			
 			if (graphed[abs(variable)] ==0){
-		
-				//ExtendSet( abs(variable), list); 
 				graphed[ abs(variable) ] =1;
 				InsertNumToSet( abs(variable), list );
-				
-				
-				
 			}
 			if ( literal->next == NULL)
 				break;
@@ -61,7 +55,7 @@ tried = calloc(total_lit+1, sizeof(*tried));
 int count =0;
 
 	set_s** array;
-	array = MakeSetArray( 401);
+	array = MakeSetArray( 2000 );
 	set_s** position						= atribute-> variable_position;
 	set_s* var_list;
 	list_s* variable;
@@ -69,7 +63,7 @@ int count =0;
 		var_list = position[i];
 		InsertNumToSet( i, array [ CountGroupSet( var_list) ] );
 	}
-	for ( int i =400; i >= 1; i--){
+	for ( int i =1000; i >= 1; i--){
 		if( array[i] == NULL )
 			continue;
 		
@@ -81,11 +75,85 @@ int count =0;
 				
 			}
 			variable= variable->next;
-			
 		}
-		
+	}
+}
+
+void BFSClause(lut* conflict, formula_atribute* atribute  ){
+/*
+	group_s* ClauseA = conflict->first;
+	group_s* ClauseB = conflict->second;
+
+	if( ClauseA == NULL || ClauseB == NULL){
+		printf("NULL BFSConnection\n");
+		exit(0);
 	}
 	
-
+	if ( CauseA == ClauseB ){
+		printf(" do something for when the clauses are the same\n");
+		exit(0);
+	}
+	
+	set_s*  list = MakeSet();
+	group_s* Clause;
+	
+	ExtendSet(ClauseA, list);
+	
+	while(list->first){
+		Clause = (group_s*)list->first->data;
+		
+		int* ListA = Clause->list;
+		
+		
+		
+		set_s*  clause_cont;
+		list_s* clause_list;
+		
+		int variable ;
+		
+		// for each variable in this graph, group connecting clauses with shared variables and add to the end of the dfs
+		for ( unsigned int lp = 0 ; lp < Clause->var_list_size; lp ++){
+			variable          = Clause[lp];
+			clause_cont       = atribute-> variable_position[ abs( variable)];
+			cluase_list			= clause_cont->first;
+			
+		
+		}
+	
+	}
+*/
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
