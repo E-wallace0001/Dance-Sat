@@ -1,5 +1,5 @@
 # Dance-Sat
-Dance Sat is a simple and efficent sat solver written in C.
+Dance Sat is a simple and efficent sat solver written in C for development and experiment.
 
 The basic algorithm leverages the power of C with Knuth's Dancing Links algorithm, with the applied limitation that each clause must contain one correct literal and dependency backtracking.
 
