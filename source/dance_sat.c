@@ -678,7 +678,7 @@ int main(int argc, char* argv[]){
 	}
 	
 	unsigned int layer = 0;
-	unsigned int limit = 8000;
+	unsigned int limit = 16000;
 
 	set_s* var_list	 = MakeSet();
 	set_s* sorted		 = MakeSet();
@@ -706,7 +706,7 @@ int main(int argc, char* argv[]){
 		loop = loop->next;
 	}
 	*/
-	//SortByConnection( &pre, problem);
+	SortByConnection( &pre, problem);
 	/*
 	
 	
@@ -731,7 +731,7 @@ int main(int argc, char* argv[]){
 	
 		for( int var =total_lit ; var>= 1; var--){
 	//while(loop){
-		graph( abs(var), pre, graphed, layer, limit, problem);
+		//graph( abs(var), pre, graphed, layer, limit, problem);
 		//InsertNumToSet( var, pre );
 		//loop = loop->next;
 	//	printf(" var %i \n", var );
@@ -929,7 +929,7 @@ int main(int argc, char* argv[]){
 						printf("\n");
 						*/
 						//halt();
-						
+						BFSClause( conflict, problem );
 						m1		 = (GS_mem*) problem->removed_set->end->data;
 						l1		 = (list_s*)m1->list;	
 						group	 = (group_s*) m1->group;
@@ -988,7 +988,7 @@ int main(int argc, char* argv[]){
 						//printf(" addr recall %p \n",address_recall[ abs(variable) ]->next );
 						printf(" %i reset_too %i \n",variable,reset_too);
 						variable = abs(reset_too);
-//						MoveSet( var_loop, address_recall[ abs(reset_too) ], var_list);
+						MoveSet( var_loop, address_recall[ abs(reset_too) ], var_list);
 						var_loop = address_recall[ abs(reset_too) ];
 						//halt(0);
 						//printf(" reset too %i \n", reset_too);

@@ -5,6 +5,7 @@
 #include "headers/cnf_llist.h"
 #include "headers/group.h"
 #include "headers/dsat.h"
+#include "headers/h_table.h"
 
 void graph( int root_var, set_s* list,unsigned int* graphed,unsigned int layer, unsigned int limit, formula_atribute* atribute){
 	
@@ -80,7 +81,6 @@ int count =0;
 }
 
 void BFSClause(lut* conflict, formula_atribute* atribute  ){
-/*
 	group_s* ClauseA = conflict->first;
 	group_s* ClauseB = conflict->second;
 
@@ -89,39 +89,64 @@ void BFSClause(lut* conflict, formula_atribute* atribute  ){
 		exit(0);
 	}
 	
-	if ( CauseA == ClauseB ){
+	if ( ClauseA == ClauseB ){
 		printf(" do something for when the clauses are the same\n");
 		exit(0);
 	}
 	
-	set_s*  list = MakeSet();
+	set_s*  CXList = MakeSet();
 	group_s* Clause;
 	
-	ExtendSet(ClauseA, list);
+	ExtendSet(ClauseA, CXList);
 	
-	while(list->first){
-		Clause = (group_s*)list->first->data;
+	printf (" %i \n", ClauseA->var_list[0] );
+	
+	int* ClauseList;
+	int variable ;
 		
-		int* ListA = Clause->list;
-		
-		
-		
-		set_s*  clause_cont;
-		list_s* clause_list;
-		
-		int variable ;
+	set_s*  clause_cont;
+	list_s* clause_list;
+	
+	hash_t* checked = hasht_create(1037) ;
+	table_add ( (int64_t)ClauseA, checked);
+	CXList->list = CXList->first;
+	
+	GS_mem* clause_data;
+	
+	group_s* CLX;
+	
+	while(CXList->list){
+		CLX = (group_s*)CXList->list->data;
+		//int* ListA = Clause->list;
 		
 		// for each variable in this graph, group connecting clauses with shared variables and add to the end of the dfs
-		for ( unsigned int lp = 0 ; lp < Clause->var_list_size; lp ++){
-			variable          = Clause[lp];
+		for ( unsigned int lp = 0; lp < CLX->var_list_size; lp ++){
+			variable          = CLX->var_list[lp];
 			clause_cont       = atribute-> variable_position[ abs( variable)];
-			cluase_list			= clause_cont->first;
 			
+			clause_list			= clause_cont->first;
+			
+			
+			while( clause_list ){
+				clause_data			= (GS_mem*)clause_list->data;
+				if ( clause_data->group == ClauseB){
+					printf(" found \n");
+					halt();
+					return;
+				}
+
+				if ( check_table ( (int64_t)clause_data->group, checked) == 0){
+					printf (" %i \n", variable );
+					table_add ( (int64_t)clause_data->group, checked);
+					ExtendSet( clause_data->group, CXList);
+				}
+
+				clause_list = clause_list->next;
+			}
 		
 		}
-	
+		CXList->list = CXList->list->next;
 	}
-*/
 }
 
 
